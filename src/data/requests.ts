@@ -1,40 +1,38 @@
-import { isAddress } from 'viem'
+import { riverRegistryAbi, riverRegistryAddress } from '@/contracts'
+import { river, riverGamma } from '@/lib/riverChain'
+import { createPublicClient, http, isAddress } from 'viem'
 import { z } from 'zod'
 
-// TODO: [HNT-6333] The main node should be decided by making a read call from the RiverRegistry in RiverChain
-// instead of picking a random node from the hardcoded list.
-const nodes = [
-  'https://framework-1.nodes.towns-u4.com',
-  'https://framework-2.nodes.towns-u4.com',
-  'https://framework-3.nodes.towns-u4.com',
-  'https://haneda-1.nodes.towns-u4.com',
-  'https://haneda-2.nodes.towns-u4.com',
-  'https://hnt-labs-1.staking.production.figment.io',
-  'https://hnt-labs-2.staking.production.figment.io',
-  'https://hnt-labs-3.staking.production.figment.io',
-  'https://ohare-1.staking.production.figment.io',
-  'https://ohare-2.staking.production.figment.io',
-  'https://ohare-3.staking.production.figment.io',
-]
-
-const getRandomNode = (nodes: string[]) => {
-  return nodes[Math.floor(Math.random() * nodes.length)]
+const getRandomNode = async (env: 'gamma' | 'omega') => {
+  const chain = env === 'gamma' ? riverGamma : river
+  const chainId = chain.id
+  const riverClient = createPublicClient({
+    chain,
+    transport: http(),
+  })
+  const nodes = await riverClient.readContract({
+    abi: riverRegistryAbi,
+    address: riverRegistryAddress[chainId],
+    functionName: 'getAllNodes',
+  })
+  const operationalNodes = nodes.filter((node) => node.status === 2)
+  const randomNode = operationalNodes[Math.floor(Math.random() * operationalNodes.length)]
+  return { node: randomNode, length: operationalNodes.length }
 }
 
-export const getNodeData = async () => {
-  const maxRetries = nodes.length
+export const getNodeData = async (env: 'gamma' | 'omega') => {
   let attempts = 0
   let lastError
   let lastNode
-  let randomNode = getRandomNode(nodes)
+  let { node: randomNode, length: maxRetries } = await getRandomNode(env)
 
   while (attempts < maxRetries) {
     while (randomNode === lastNode) {
-      randomNode = getRandomNode(nodes)
+      randomNode = await getRandomNode(env).then(({ node }) => node)
     }
     try {
-      const res = await fetch(`${randomNode}/debug/multi/json`)
-      if (!res.ok) throw new Error(`${randomNode} failed with status: ${res.status}`)
+      const res = await fetch(`${randomNode.url}/debug/multi/json`)
+      if (!res.ok) throw new Error(`${randomNode.url} failed with status: ${res.status}`)
       return res.json() as Promise<NodeStatusSchema>
     } catch (error) {
       attempts++

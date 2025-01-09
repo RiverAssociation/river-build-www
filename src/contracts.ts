@@ -1193,6 +1193,921 @@ export const riverClaimerConfig = {
 } as const
 
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+// RiverRegistry
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+/**
+
+*/
+export const riverRegistryAbi = [
+  {
+    type: 'constructor',
+    inputs: [
+      {
+        name: 'approvedOperators',
+        internalType: 'address[]',
+        type: 'address[]',
+      },
+    ],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [
+      {
+        name: 'initialOperators',
+        internalType: 'address[]',
+        type: 'address[]',
+      },
+    ],
+    name: '__OperatorRegistry_init',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: 'configManagers', internalType: 'address[]', type: 'address[]' },
+    ],
+    name: '__RiverConfig_init',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: 'streamId', internalType: 'bytes32', type: 'bytes32' },
+      { name: 'nodes', internalType: 'address[]', type: 'address[]' },
+      {
+        name: 'genesisMiniblockHash',
+        internalType: 'bytes32',
+        type: 'bytes32',
+      },
+      { name: 'genesisMiniblock', internalType: 'bytes', type: 'bytes' },
+    ],
+    name: 'allocateStream',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: 'manager', internalType: 'address', type: 'address' }],
+    name: 'approveConfigurationManager',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: 'operator', internalType: 'address', type: 'address' }],
+    name: 'approveOperator',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: 'key', internalType: 'bytes32', type: 'bytes32' }],
+    name: 'configurationExists',
+    outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: 'key', internalType: 'bytes32', type: 'bytes32' }],
+    name: 'deleteConfiguration',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: 'key', internalType: 'bytes32', type: 'bytes32' },
+      { name: 'blockNumber', internalType: 'uint64', type: 'uint64' },
+    ],
+    name: 'deleteConfigurationOnBlock',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'getAllConfiguration',
+    outputs: [
+      {
+        name: '',
+        internalType: 'struct Setting[]',
+        type: 'tuple[]',
+        components: [
+          { name: 'key', internalType: 'bytes32', type: 'bytes32' },
+          { name: 'blockNumber', internalType: 'uint64', type: 'uint64' },
+          { name: 'value', internalType: 'bytes', type: 'bytes' },
+        ],
+      },
+    ],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'getAllNodeAddresses',
+    outputs: [{ name: '', internalType: 'address[]', type: 'address[]' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'getAllNodes',
+    outputs: [
+      {
+        name: '',
+        internalType: 'struct Node[]',
+        type: 'tuple[]',
+        components: [
+          { name: 'status', internalType: 'enum NodeStatus', type: 'uint8' },
+          { name: 'url', internalType: 'string', type: 'string' },
+          { name: 'nodeAddress', internalType: 'address', type: 'address' },
+          { name: 'operator', internalType: 'address', type: 'address' },
+        ],
+      },
+    ],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'getAllOperators',
+    outputs: [{ name: '', internalType: 'address[]', type: 'address[]' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'getAllStreamIds',
+    outputs: [{ name: '', internalType: 'bytes32[]', type: 'bytes32[]' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'getAllStreams',
+    outputs: [
+      {
+        name: '',
+        internalType: 'struct StreamWithId[]',
+        type: 'tuple[]',
+        components: [
+          { name: 'id', internalType: 'bytes32', type: 'bytes32' },
+          {
+            name: 'stream',
+            internalType: 'struct Stream',
+            type: 'tuple',
+            components: [
+              {
+                name: 'lastMiniblockHash',
+                internalType: 'bytes32',
+                type: 'bytes32',
+              },
+              {
+                name: 'lastMiniblockNum',
+                internalType: 'uint64',
+                type: 'uint64',
+              },
+              { name: 'reserved0', internalType: 'uint64', type: 'uint64' },
+              { name: 'flags', internalType: 'uint64', type: 'uint64' },
+              { name: 'nodes', internalType: 'address[]', type: 'address[]' },
+            ],
+          },
+        ],
+      },
+    ],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: 'key', internalType: 'bytes32', type: 'bytes32' }],
+    name: 'getConfiguration',
+    outputs: [
+      {
+        name: '',
+        internalType: 'struct Setting[]',
+        type: 'tuple[]',
+        components: [
+          { name: 'key', internalType: 'bytes32', type: 'bytes32' },
+          { name: 'blockNumber', internalType: 'uint64', type: 'uint64' },
+          { name: 'value', internalType: 'bytes', type: 'bytes' },
+        ],
+      },
+    ],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: 'nodeAddress', internalType: 'address', type: 'address' }],
+    name: 'getNode',
+    outputs: [
+      {
+        name: '',
+        internalType: 'struct Node',
+        type: 'tuple',
+        components: [
+          { name: 'status', internalType: 'enum NodeStatus', type: 'uint8' },
+          { name: 'url', internalType: 'string', type: 'string' },
+          { name: 'nodeAddress', internalType: 'address', type: 'address' },
+          { name: 'operator', internalType: 'address', type: 'address' },
+        ],
+      },
+    ],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'getNodeCount',
+    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: 'start', internalType: 'uint256', type: 'uint256' },
+      { name: 'stop', internalType: 'uint256', type: 'uint256' },
+    ],
+    name: 'getPaginatedStreams',
+    outputs: [
+      {
+        name: '',
+        internalType: 'struct StreamWithId[]',
+        type: 'tuple[]',
+        components: [
+          { name: 'id', internalType: 'bytes32', type: 'bytes32' },
+          {
+            name: 'stream',
+            internalType: 'struct Stream',
+            type: 'tuple',
+            components: [
+              {
+                name: 'lastMiniblockHash',
+                internalType: 'bytes32',
+                type: 'bytes32',
+              },
+              {
+                name: 'lastMiniblockNum',
+                internalType: 'uint64',
+                type: 'uint64',
+              },
+              { name: 'reserved0', internalType: 'uint64', type: 'uint64' },
+              { name: 'flags', internalType: 'uint64', type: 'uint64' },
+              { name: 'nodes', internalType: 'address[]', type: 'address[]' },
+            ],
+          },
+        ],
+      },
+      { name: '', internalType: 'bool', type: 'bool' },
+    ],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: 'streamId', internalType: 'bytes32', type: 'bytes32' }],
+    name: 'getStream',
+    outputs: [
+      {
+        name: '',
+        internalType: 'struct Stream',
+        type: 'tuple',
+        components: [
+          {
+            name: 'lastMiniblockHash',
+            internalType: 'bytes32',
+            type: 'bytes32',
+          },
+          { name: 'lastMiniblockNum', internalType: 'uint64', type: 'uint64' },
+          { name: 'reserved0', internalType: 'uint64', type: 'uint64' },
+          { name: 'flags', internalType: 'uint64', type: 'uint64' },
+          { name: 'nodes', internalType: 'address[]', type: 'address[]' },
+        ],
+      },
+    ],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: 'i', internalType: 'uint256', type: 'uint256' }],
+    name: 'getStreamByIndex',
+    outputs: [
+      {
+        name: '',
+        internalType: 'struct StreamWithId',
+        type: 'tuple',
+        components: [
+          { name: 'id', internalType: 'bytes32', type: 'bytes32' },
+          {
+            name: 'stream',
+            internalType: 'struct Stream',
+            type: 'tuple',
+            components: [
+              {
+                name: 'lastMiniblockHash',
+                internalType: 'bytes32',
+                type: 'bytes32',
+              },
+              {
+                name: 'lastMiniblockNum',
+                internalType: 'uint64',
+                type: 'uint64',
+              },
+              { name: 'reserved0', internalType: 'uint64', type: 'uint64' },
+              { name: 'flags', internalType: 'uint64', type: 'uint64' },
+              { name: 'nodes', internalType: 'address[]', type: 'address[]' },
+            ],
+          },
+        ],
+      },
+    ],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [],
+    name: 'getStreamCount',
+    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: 'nodeAddress', internalType: 'address', type: 'address' }],
+    name: 'getStreamCountOnNode',
+    outputs: [{ name: '', internalType: 'uint256', type: 'uint256' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: 'streamId', internalType: 'bytes32', type: 'bytes32' }],
+    name: 'getStreamWithGenesis',
+    outputs: [
+      {
+        name: '',
+        internalType: 'struct Stream',
+        type: 'tuple',
+        components: [
+          {
+            name: 'lastMiniblockHash',
+            internalType: 'bytes32',
+            type: 'bytes32',
+          },
+          { name: 'lastMiniblockNum', internalType: 'uint64', type: 'uint64' },
+          { name: 'reserved0', internalType: 'uint64', type: 'uint64' },
+          { name: 'flags', internalType: 'uint64', type: 'uint64' },
+          { name: 'nodes', internalType: 'address[]', type: 'address[]' },
+        ],
+      },
+      { name: '', internalType: 'bytes32', type: 'bytes32' },
+      { name: '', internalType: 'bytes', type: 'bytes' },
+    ],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: 'streamIds', internalType: 'bytes32[]', type: 'bytes32[]' },
+    ],
+    name: 'getStreams',
+    outputs: [
+      { name: 'foundCount', internalType: 'uint256', type: 'uint256' },
+      {
+        name: '',
+        internalType: 'struct StreamWithId[]',
+        type: 'tuple[]',
+        components: [
+          { name: 'id', internalType: 'bytes32', type: 'bytes32' },
+          {
+            name: 'stream',
+            internalType: 'struct Stream',
+            type: 'tuple',
+            components: [
+              {
+                name: 'lastMiniblockHash',
+                internalType: 'bytes32',
+                type: 'bytes32',
+              },
+              {
+                name: 'lastMiniblockNum',
+                internalType: 'uint64',
+                type: 'uint64',
+              },
+              { name: 'reserved0', internalType: 'uint64', type: 'uint64' },
+              { name: 'flags', internalType: 'uint64', type: 'uint64' },
+              { name: 'nodes', internalType: 'address[]', type: 'address[]' },
+            ],
+          },
+        ],
+      },
+    ],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: 'nodeAddress', internalType: 'address', type: 'address' }],
+    name: 'getStreamsOnNode',
+    outputs: [
+      {
+        name: '',
+        internalType: 'struct StreamWithId[]',
+        type: 'tuple[]',
+        components: [
+          { name: 'id', internalType: 'bytes32', type: 'bytes32' },
+          {
+            name: 'stream',
+            internalType: 'struct Stream',
+            type: 'tuple',
+            components: [
+              {
+                name: 'lastMiniblockHash',
+                internalType: 'bytes32',
+                type: 'bytes32',
+              },
+              {
+                name: 'lastMiniblockNum',
+                internalType: 'uint64',
+                type: 'uint64',
+              },
+              { name: 'reserved0', internalType: 'uint64', type: 'uint64' },
+              { name: 'flags', internalType: 'uint64', type: 'uint64' },
+              { name: 'nodes', internalType: 'address[]', type: 'address[]' },
+            ],
+          },
+        ],
+      },
+    ],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: 'manager', internalType: 'address', type: 'address' }],
+    name: 'isConfigurationManager',
+    outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: 'operator', internalType: 'address', type: 'address' }],
+    name: 'isOperator',
+    outputs: [{ name: '', internalType: 'bool', type: 'bool' }],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: 'streamId', internalType: 'bytes32', type: 'bytes32' },
+      { name: 'nodeAddress', internalType: 'address', type: 'address' },
+    ],
+    name: 'placeStreamOnNode',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: 'nodeAddress', internalType: 'address', type: 'address' },
+      { name: 'url', internalType: 'string', type: 'string' },
+      { name: 'status', internalType: 'enum NodeStatus', type: 'uint8' },
+    ],
+    name: 'registerNode',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: 'manager', internalType: 'address', type: 'address' }],
+    name: 'removeConfigurationManager',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: 'nodeAddress', internalType: 'address', type: 'address' }],
+    name: 'removeNode',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [{ name: 'operator', internalType: 'address', type: 'address' }],
+    name: 'removeOperator',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: 'streamId', internalType: 'bytes32', type: 'bytes32' },
+      { name: 'nodeAddress', internalType: 'address', type: 'address' },
+    ],
+    name: 'removeStreamFromNode',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: 'key', internalType: 'bytes32', type: 'bytes32' },
+      { name: 'blockNumber', internalType: 'uint64', type: 'uint64' },
+      { name: 'value', internalType: 'bytes', type: 'bytes' },
+    ],
+    name: 'setConfiguration',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: 'streamId', internalType: 'bytes32', type: 'bytes32' },
+      { name: 'prevMiniBlockHash', internalType: 'bytes32', type: 'bytes32' },
+      { name: 'lastMiniblockHash', internalType: 'bytes32', type: 'bytes32' },
+      { name: 'lastMiniblockNum', internalType: 'uint64', type: 'uint64' },
+      { name: 'isSealed', internalType: 'bool', type: 'bool' },
+    ],
+    name: 'setStreamLastMiniblock',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [
+      {
+        name: 'miniblocks',
+        internalType: 'struct SetMiniblock[]',
+        type: 'tuple[]',
+        components: [
+          { name: 'streamId', internalType: 'bytes32', type: 'bytes32' },
+          {
+            name: 'prevMiniBlockHash',
+            internalType: 'bytes32',
+            type: 'bytes32',
+          },
+          {
+            name: 'lastMiniblockHash',
+            internalType: 'bytes32',
+            type: 'bytes32',
+          },
+          { name: 'lastMiniblockNum', internalType: 'uint64', type: 'uint64' },
+          { name: 'isSealed', internalType: 'bool', type: 'bool' },
+        ],
+      },
+    ],
+    name: 'setStreamLastMiniblockBatch',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: 'nodeAddress', internalType: 'address', type: 'address' },
+      { name: 'status', internalType: 'enum NodeStatus', type: 'uint8' },
+    ],
+    name: 'updateNodeStatus',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    inputs: [
+      { name: 'nodeAddress', internalType: 'address', type: 'address' },
+      { name: 'url', internalType: 'string', type: 'string' },
+    ],
+    name: 'updateNodeUrl',
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      { name: 'key', internalType: 'bytes32', type: 'bytes32', indexed: false },
+      { name: 'block', internalType: 'uint64', type: 'uint64', indexed: false },
+      { name: 'value', internalType: 'bytes', type: 'bytes', indexed: false },
+      { name: 'deleted', internalType: 'bool', type: 'bool', indexed: false },
+    ],
+    name: 'ConfigurationChanged',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'manager',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+    ],
+    name: 'ConfigurationManagerAdded',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'manager',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+    ],
+    name: 'ConfigurationManagerRemoved',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'version',
+        internalType: 'uint32',
+        type: 'uint32',
+        indexed: false,
+      },
+    ],
+    name: 'Initialized',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'interfaceId',
+        internalType: 'bytes4',
+        type: 'bytes4',
+        indexed: true,
+      },
+    ],
+    name: 'InterfaceAdded',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'interfaceId',
+        internalType: 'bytes4',
+        type: 'bytes4',
+        indexed: true,
+      },
+    ],
+    name: 'InterfaceRemoved',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'nodeAddress',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+      {
+        name: 'operator',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+      { name: 'url', internalType: 'string', type: 'string', indexed: false },
+      {
+        name: 'status',
+        internalType: 'enum NodeStatus',
+        type: 'uint8',
+        indexed: false,
+      },
+    ],
+    name: 'NodeAdded',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'nodeAddress',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+    ],
+    name: 'NodeRemoved',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'nodeAddress',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+      {
+        name: 'status',
+        internalType: 'enum NodeStatus',
+        type: 'uint8',
+        indexed: false,
+      },
+    ],
+    name: 'NodeStatusUpdated',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'nodeAddress',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+      { name: 'url', internalType: 'string', type: 'string', indexed: false },
+    ],
+    name: 'NodeUrlUpdated',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'operatorAddress',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+    ],
+    name: 'OperatorAdded',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'operatorAddress',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+    ],
+    name: 'OperatorRemoved',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'previousOwner',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+      {
+        name: 'newOwner',
+        internalType: 'address',
+        type: 'address',
+        indexed: true,
+      },
+    ],
+    name: 'OwnershipTransferred',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'streamId',
+        internalType: 'bytes32',
+        type: 'bytes32',
+        indexed: false,
+      },
+      {
+        name: 'nodes',
+        internalType: 'address[]',
+        type: 'address[]',
+        indexed: false,
+      },
+      {
+        name: 'genesisMiniblockHash',
+        internalType: 'bytes32',
+        type: 'bytes32',
+        indexed: false,
+      },
+      {
+        name: 'genesisMiniblock',
+        internalType: 'bytes',
+        type: 'bytes',
+        indexed: false,
+      },
+    ],
+    name: 'StreamAllocated',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'streamId',
+        internalType: 'bytes32',
+        type: 'bytes32',
+        indexed: false,
+      },
+      {
+        name: 'lastMiniblockHash',
+        internalType: 'bytes32',
+        type: 'bytes32',
+        indexed: false,
+      },
+      {
+        name: 'lastMiniblockNum',
+        internalType: 'uint64',
+        type: 'uint64',
+        indexed: false,
+      },
+      {
+        name: 'reason',
+        internalType: 'string',
+        type: 'string',
+        indexed: false,
+      },
+    ],
+    name: 'StreamLastMiniblockUpdateFailed',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'streamId',
+        internalType: 'bytes32',
+        type: 'bytes32',
+        indexed: false,
+      },
+      {
+        name: 'lastMiniblockHash',
+        internalType: 'bytes32',
+        type: 'bytes32',
+        indexed: false,
+      },
+      {
+        name: 'lastMiniblockNum',
+        internalType: 'uint64',
+        type: 'uint64',
+        indexed: false,
+      },
+      { name: 'isSealed', internalType: 'bool', type: 'bool', indexed: false },
+    ],
+    name: 'StreamLastMiniblockUpdated',
+  },
+  {
+    type: 'event',
+    anonymous: false,
+    inputs: [
+      {
+        name: 'streamId',
+        internalType: 'bytes32',
+        type: 'bytes32',
+        indexed: false,
+      },
+      {
+        name: 'nodeAddress',
+        internalType: 'address',
+        type: 'address',
+        indexed: false,
+      },
+      { name: 'isAdded', internalType: 'bool', type: 'bool', indexed: false },
+    ],
+    name: 'StreamPlacementUpdated',
+  },
+  { type: 'error', inputs: [], name: 'Initializable_InInitializingState' },
+  { type: 'error', inputs: [], name: 'Initializable_NotInInitializingState' },
+  { type: 'error', inputs: [], name: 'Introspection_AlreadySupported' },
+  { type: 'error', inputs: [], name: 'Introspection_NotSupported' },
+  {
+    type: 'error',
+    inputs: [{ name: 'account', internalType: 'address', type: 'address' }],
+    name: 'Ownable__NotOwner',
+  },
+  { type: 'error', inputs: [], name: 'Ownable__ZeroAddress' },
+] as const
+
+/**
+
+*/
+export const riverRegistryAddress = {
+  550: '0x1298c03Fde548dc433a452573E36A713b38A0404',
+  6524490: '0xf18E98D36A6bd1aDb52F776aCc191E69B491c070',
+} as const
+
+/**
+
+*/
+export const riverRegistryConfig = {
+  address: riverRegistryAddress,
+  abi: riverRegistryAbi,
+} as const
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 // RiverToken
 //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
@@ -3455,6 +4370,767 @@ export const useWatchRiverClaimerTransferEvent =
     abi: riverClaimerAbi,
     address: riverClaimerAddress,
     eventName: 'Transfer',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link riverRegistryAbi}__
+ */
+export const useReadRiverRegistry = /*#__PURE__*/ createUseReadContract({
+  abi: riverRegistryAbi,
+  address: riverRegistryAddress,
+})
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link riverRegistryAbi}__ and `functionName` set to `"configurationExists"`
+ */
+export const useReadRiverRegistryConfigurationExists =
+  /*#__PURE__*/ createUseReadContract({
+    abi: riverRegistryAbi,
+    address: riverRegistryAddress,
+    functionName: 'configurationExists',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link riverRegistryAbi}__ and `functionName` set to `"getAllConfiguration"`
+ */
+export const useReadRiverRegistryGetAllConfiguration =
+  /*#__PURE__*/ createUseReadContract({
+    abi: riverRegistryAbi,
+    address: riverRegistryAddress,
+    functionName: 'getAllConfiguration',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link riverRegistryAbi}__ and `functionName` set to `"getAllNodeAddresses"`
+ */
+export const useReadRiverRegistryGetAllNodeAddresses =
+  /*#__PURE__*/ createUseReadContract({
+    abi: riverRegistryAbi,
+    address: riverRegistryAddress,
+    functionName: 'getAllNodeAddresses',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link riverRegistryAbi}__ and `functionName` set to `"getAllNodes"`
+ */
+export const useReadRiverRegistryGetAllNodes =
+  /*#__PURE__*/ createUseReadContract({
+    abi: riverRegistryAbi,
+    address: riverRegistryAddress,
+    functionName: 'getAllNodes',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link riverRegistryAbi}__ and `functionName` set to `"getAllOperators"`
+ */
+export const useReadRiverRegistryGetAllOperators =
+  /*#__PURE__*/ createUseReadContract({
+    abi: riverRegistryAbi,
+    address: riverRegistryAddress,
+    functionName: 'getAllOperators',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link riverRegistryAbi}__ and `functionName` set to `"getAllStreamIds"`
+ */
+export const useReadRiverRegistryGetAllStreamIds =
+  /*#__PURE__*/ createUseReadContract({
+    abi: riverRegistryAbi,
+    address: riverRegistryAddress,
+    functionName: 'getAllStreamIds',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link riverRegistryAbi}__ and `functionName` set to `"getAllStreams"`
+ */
+export const useReadRiverRegistryGetAllStreams =
+  /*#__PURE__*/ createUseReadContract({
+    abi: riverRegistryAbi,
+    address: riverRegistryAddress,
+    functionName: 'getAllStreams',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link riverRegistryAbi}__ and `functionName` set to `"getConfiguration"`
+ */
+export const useReadRiverRegistryGetConfiguration =
+  /*#__PURE__*/ createUseReadContract({
+    abi: riverRegistryAbi,
+    address: riverRegistryAddress,
+    functionName: 'getConfiguration',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link riverRegistryAbi}__ and `functionName` set to `"getNode"`
+ */
+export const useReadRiverRegistryGetNode = /*#__PURE__*/ createUseReadContract({
+  abi: riverRegistryAbi,
+  address: riverRegistryAddress,
+  functionName: 'getNode',
+})
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link riverRegistryAbi}__ and `functionName` set to `"getNodeCount"`
+ */
+export const useReadRiverRegistryGetNodeCount =
+  /*#__PURE__*/ createUseReadContract({
+    abi: riverRegistryAbi,
+    address: riverRegistryAddress,
+    functionName: 'getNodeCount',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link riverRegistryAbi}__ and `functionName` set to `"getPaginatedStreams"`
+ */
+export const useReadRiverRegistryGetPaginatedStreams =
+  /*#__PURE__*/ createUseReadContract({
+    abi: riverRegistryAbi,
+    address: riverRegistryAddress,
+    functionName: 'getPaginatedStreams',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link riverRegistryAbi}__ and `functionName` set to `"getStream"`
+ */
+export const useReadRiverRegistryGetStream =
+  /*#__PURE__*/ createUseReadContract({
+    abi: riverRegistryAbi,
+    address: riverRegistryAddress,
+    functionName: 'getStream',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link riverRegistryAbi}__ and `functionName` set to `"getStreamByIndex"`
+ */
+export const useReadRiverRegistryGetStreamByIndex =
+  /*#__PURE__*/ createUseReadContract({
+    abi: riverRegistryAbi,
+    address: riverRegistryAddress,
+    functionName: 'getStreamByIndex',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link riverRegistryAbi}__ and `functionName` set to `"getStreamCount"`
+ */
+export const useReadRiverRegistryGetStreamCount =
+  /*#__PURE__*/ createUseReadContract({
+    abi: riverRegistryAbi,
+    address: riverRegistryAddress,
+    functionName: 'getStreamCount',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link riverRegistryAbi}__ and `functionName` set to `"getStreamCountOnNode"`
+ */
+export const useReadRiverRegistryGetStreamCountOnNode =
+  /*#__PURE__*/ createUseReadContract({
+    abi: riverRegistryAbi,
+    address: riverRegistryAddress,
+    functionName: 'getStreamCountOnNode',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link riverRegistryAbi}__ and `functionName` set to `"getStreamWithGenesis"`
+ */
+export const useReadRiverRegistryGetStreamWithGenesis =
+  /*#__PURE__*/ createUseReadContract({
+    abi: riverRegistryAbi,
+    address: riverRegistryAddress,
+    functionName: 'getStreamWithGenesis',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link riverRegistryAbi}__ and `functionName` set to `"getStreams"`
+ */
+export const useReadRiverRegistryGetStreams =
+  /*#__PURE__*/ createUseReadContract({
+    abi: riverRegistryAbi,
+    address: riverRegistryAddress,
+    functionName: 'getStreams',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link riverRegistryAbi}__ and `functionName` set to `"getStreamsOnNode"`
+ */
+export const useReadRiverRegistryGetStreamsOnNode =
+  /*#__PURE__*/ createUseReadContract({
+    abi: riverRegistryAbi,
+    address: riverRegistryAddress,
+    functionName: 'getStreamsOnNode',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link riverRegistryAbi}__ and `functionName` set to `"isConfigurationManager"`
+ */
+export const useReadRiverRegistryIsConfigurationManager =
+  /*#__PURE__*/ createUseReadContract({
+    abi: riverRegistryAbi,
+    address: riverRegistryAddress,
+    functionName: 'isConfigurationManager',
+  })
+
+/**
+ * Wraps __{@link useReadContract}__ with `abi` set to __{@link riverRegistryAbi}__ and `functionName` set to `"isOperator"`
+ */
+export const useReadRiverRegistryIsOperator =
+  /*#__PURE__*/ createUseReadContract({
+    abi: riverRegistryAbi,
+    address: riverRegistryAddress,
+    functionName: 'isOperator',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link riverRegistryAbi}__
+ */
+export const useWriteRiverRegistry = /*#__PURE__*/ createUseWriteContract({
+  abi: riverRegistryAbi,
+  address: riverRegistryAddress,
+})
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link riverRegistryAbi}__ and `functionName` set to `"__OperatorRegistry_init"`
+ */
+export const useWriteRiverRegistryOperatorRegistryInit =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: riverRegistryAbi,
+    address: riverRegistryAddress,
+    functionName: '__OperatorRegistry_init',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link riverRegistryAbi}__ and `functionName` set to `"__RiverConfig_init"`
+ */
+export const useWriteRiverRegistryRiverConfigInit =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: riverRegistryAbi,
+    address: riverRegistryAddress,
+    functionName: '__RiverConfig_init',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link riverRegistryAbi}__ and `functionName` set to `"allocateStream"`
+ */
+export const useWriteRiverRegistryAllocateStream =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: riverRegistryAbi,
+    address: riverRegistryAddress,
+    functionName: 'allocateStream',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link riverRegistryAbi}__ and `functionName` set to `"approveConfigurationManager"`
+ */
+export const useWriteRiverRegistryApproveConfigurationManager =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: riverRegistryAbi,
+    address: riverRegistryAddress,
+    functionName: 'approveConfigurationManager',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link riverRegistryAbi}__ and `functionName` set to `"approveOperator"`
+ */
+export const useWriteRiverRegistryApproveOperator =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: riverRegistryAbi,
+    address: riverRegistryAddress,
+    functionName: 'approveOperator',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link riverRegistryAbi}__ and `functionName` set to `"deleteConfiguration"`
+ */
+export const useWriteRiverRegistryDeleteConfiguration =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: riverRegistryAbi,
+    address: riverRegistryAddress,
+    functionName: 'deleteConfiguration',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link riverRegistryAbi}__ and `functionName` set to `"deleteConfigurationOnBlock"`
+ */
+export const useWriteRiverRegistryDeleteConfigurationOnBlock =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: riverRegistryAbi,
+    address: riverRegistryAddress,
+    functionName: 'deleteConfigurationOnBlock',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link riverRegistryAbi}__ and `functionName` set to `"placeStreamOnNode"`
+ */
+export const useWriteRiverRegistryPlaceStreamOnNode =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: riverRegistryAbi,
+    address: riverRegistryAddress,
+    functionName: 'placeStreamOnNode',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link riverRegistryAbi}__ and `functionName` set to `"registerNode"`
+ */
+export const useWriteRiverRegistryRegisterNode =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: riverRegistryAbi,
+    address: riverRegistryAddress,
+    functionName: 'registerNode',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link riverRegistryAbi}__ and `functionName` set to `"removeConfigurationManager"`
+ */
+export const useWriteRiverRegistryRemoveConfigurationManager =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: riverRegistryAbi,
+    address: riverRegistryAddress,
+    functionName: 'removeConfigurationManager',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link riverRegistryAbi}__ and `functionName` set to `"removeNode"`
+ */
+export const useWriteRiverRegistryRemoveNode =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: riverRegistryAbi,
+    address: riverRegistryAddress,
+    functionName: 'removeNode',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link riverRegistryAbi}__ and `functionName` set to `"removeOperator"`
+ */
+export const useWriteRiverRegistryRemoveOperator =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: riverRegistryAbi,
+    address: riverRegistryAddress,
+    functionName: 'removeOperator',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link riverRegistryAbi}__ and `functionName` set to `"removeStreamFromNode"`
+ */
+export const useWriteRiverRegistryRemoveStreamFromNode =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: riverRegistryAbi,
+    address: riverRegistryAddress,
+    functionName: 'removeStreamFromNode',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link riverRegistryAbi}__ and `functionName` set to `"setConfiguration"`
+ */
+export const useWriteRiverRegistrySetConfiguration =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: riverRegistryAbi,
+    address: riverRegistryAddress,
+    functionName: 'setConfiguration',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link riverRegistryAbi}__ and `functionName` set to `"setStreamLastMiniblock"`
+ */
+export const useWriteRiverRegistrySetStreamLastMiniblock =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: riverRegistryAbi,
+    address: riverRegistryAddress,
+    functionName: 'setStreamLastMiniblock',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link riverRegistryAbi}__ and `functionName` set to `"setStreamLastMiniblockBatch"`
+ */
+export const useWriteRiverRegistrySetStreamLastMiniblockBatch =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: riverRegistryAbi,
+    address: riverRegistryAddress,
+    functionName: 'setStreamLastMiniblockBatch',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link riverRegistryAbi}__ and `functionName` set to `"updateNodeStatus"`
+ */
+export const useWriteRiverRegistryUpdateNodeStatus =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: riverRegistryAbi,
+    address: riverRegistryAddress,
+    functionName: 'updateNodeStatus',
+  })
+
+/**
+ * Wraps __{@link useWriteContract}__ with `abi` set to __{@link riverRegistryAbi}__ and `functionName` set to `"updateNodeUrl"`
+ */
+export const useWriteRiverRegistryUpdateNodeUrl =
+  /*#__PURE__*/ createUseWriteContract({
+    abi: riverRegistryAbi,
+    address: riverRegistryAddress,
+    functionName: 'updateNodeUrl',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link riverRegistryAbi}__
+ */
+export const useSimulateRiverRegistry = /*#__PURE__*/ createUseSimulateContract(
+  { abi: riverRegistryAbi, address: riverRegistryAddress },
+)
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link riverRegistryAbi}__ and `functionName` set to `"__OperatorRegistry_init"`
+ */
+export const useSimulateRiverRegistryOperatorRegistryInit =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: riverRegistryAbi,
+    address: riverRegistryAddress,
+    functionName: '__OperatorRegistry_init',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link riverRegistryAbi}__ and `functionName` set to `"__RiverConfig_init"`
+ */
+export const useSimulateRiverRegistryRiverConfigInit =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: riverRegistryAbi,
+    address: riverRegistryAddress,
+    functionName: '__RiverConfig_init',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link riverRegistryAbi}__ and `functionName` set to `"allocateStream"`
+ */
+export const useSimulateRiverRegistryAllocateStream =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: riverRegistryAbi,
+    address: riverRegistryAddress,
+    functionName: 'allocateStream',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link riverRegistryAbi}__ and `functionName` set to `"approveConfigurationManager"`
+ */
+export const useSimulateRiverRegistryApproveConfigurationManager =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: riverRegistryAbi,
+    address: riverRegistryAddress,
+    functionName: 'approveConfigurationManager',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link riverRegistryAbi}__ and `functionName` set to `"approveOperator"`
+ */
+export const useSimulateRiverRegistryApproveOperator =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: riverRegistryAbi,
+    address: riverRegistryAddress,
+    functionName: 'approveOperator',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link riverRegistryAbi}__ and `functionName` set to `"deleteConfiguration"`
+ */
+export const useSimulateRiverRegistryDeleteConfiguration =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: riverRegistryAbi,
+    address: riverRegistryAddress,
+    functionName: 'deleteConfiguration',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link riverRegistryAbi}__ and `functionName` set to `"deleteConfigurationOnBlock"`
+ */
+export const useSimulateRiverRegistryDeleteConfigurationOnBlock =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: riverRegistryAbi,
+    address: riverRegistryAddress,
+    functionName: 'deleteConfigurationOnBlock',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link riverRegistryAbi}__ and `functionName` set to `"placeStreamOnNode"`
+ */
+export const useSimulateRiverRegistryPlaceStreamOnNode =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: riverRegistryAbi,
+    address: riverRegistryAddress,
+    functionName: 'placeStreamOnNode',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link riverRegistryAbi}__ and `functionName` set to `"registerNode"`
+ */
+export const useSimulateRiverRegistryRegisterNode =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: riverRegistryAbi,
+    address: riverRegistryAddress,
+    functionName: 'registerNode',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link riverRegistryAbi}__ and `functionName` set to `"removeConfigurationManager"`
+ */
+export const useSimulateRiverRegistryRemoveConfigurationManager =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: riverRegistryAbi,
+    address: riverRegistryAddress,
+    functionName: 'removeConfigurationManager',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link riverRegistryAbi}__ and `functionName` set to `"removeNode"`
+ */
+export const useSimulateRiverRegistryRemoveNode =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: riverRegistryAbi,
+    address: riverRegistryAddress,
+    functionName: 'removeNode',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link riverRegistryAbi}__ and `functionName` set to `"removeOperator"`
+ */
+export const useSimulateRiverRegistryRemoveOperator =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: riverRegistryAbi,
+    address: riverRegistryAddress,
+    functionName: 'removeOperator',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link riverRegistryAbi}__ and `functionName` set to `"removeStreamFromNode"`
+ */
+export const useSimulateRiverRegistryRemoveStreamFromNode =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: riverRegistryAbi,
+    address: riverRegistryAddress,
+    functionName: 'removeStreamFromNode',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link riverRegistryAbi}__ and `functionName` set to `"setConfiguration"`
+ */
+export const useSimulateRiverRegistrySetConfiguration =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: riverRegistryAbi,
+    address: riverRegistryAddress,
+    functionName: 'setConfiguration',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link riverRegistryAbi}__ and `functionName` set to `"setStreamLastMiniblock"`
+ */
+export const useSimulateRiverRegistrySetStreamLastMiniblock =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: riverRegistryAbi,
+    address: riverRegistryAddress,
+    functionName: 'setStreamLastMiniblock',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link riverRegistryAbi}__ and `functionName` set to `"setStreamLastMiniblockBatch"`
+ */
+export const useSimulateRiverRegistrySetStreamLastMiniblockBatch =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: riverRegistryAbi,
+    address: riverRegistryAddress,
+    functionName: 'setStreamLastMiniblockBatch',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link riverRegistryAbi}__ and `functionName` set to `"updateNodeStatus"`
+ */
+export const useSimulateRiverRegistryUpdateNodeStatus =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: riverRegistryAbi,
+    address: riverRegistryAddress,
+    functionName: 'updateNodeStatus',
+  })
+
+/**
+ * Wraps __{@link useSimulateContract}__ with `abi` set to __{@link riverRegistryAbi}__ and `functionName` set to `"updateNodeUrl"`
+ */
+export const useSimulateRiverRegistryUpdateNodeUrl =
+  /*#__PURE__*/ createUseSimulateContract({
+    abi: riverRegistryAbi,
+    address: riverRegistryAddress,
+    functionName: 'updateNodeUrl',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link riverRegistryAbi}__
+ */
+export const useWatchRiverRegistryEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: riverRegistryAbi,
+    address: riverRegistryAddress,
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link riverRegistryAbi}__ and `eventName` set to `"ConfigurationChanged"`
+ */
+export const useWatchRiverRegistryConfigurationChangedEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: riverRegistryAbi,
+    address: riverRegistryAddress,
+    eventName: 'ConfigurationChanged',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link riverRegistryAbi}__ and `eventName` set to `"ConfigurationManagerAdded"`
+ */
+export const useWatchRiverRegistryConfigurationManagerAddedEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: riverRegistryAbi,
+    address: riverRegistryAddress,
+    eventName: 'ConfigurationManagerAdded',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link riverRegistryAbi}__ and `eventName` set to `"ConfigurationManagerRemoved"`
+ */
+export const useWatchRiverRegistryConfigurationManagerRemovedEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: riverRegistryAbi,
+    address: riverRegistryAddress,
+    eventName: 'ConfigurationManagerRemoved',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link riverRegistryAbi}__ and `eventName` set to `"Initialized"`
+ */
+export const useWatchRiverRegistryInitializedEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: riverRegistryAbi,
+    address: riverRegistryAddress,
+    eventName: 'Initialized',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link riverRegistryAbi}__ and `eventName` set to `"InterfaceAdded"`
+ */
+export const useWatchRiverRegistryInterfaceAddedEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: riverRegistryAbi,
+    address: riverRegistryAddress,
+    eventName: 'InterfaceAdded',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link riverRegistryAbi}__ and `eventName` set to `"InterfaceRemoved"`
+ */
+export const useWatchRiverRegistryInterfaceRemovedEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: riverRegistryAbi,
+    address: riverRegistryAddress,
+    eventName: 'InterfaceRemoved',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link riverRegistryAbi}__ and `eventName` set to `"NodeAdded"`
+ */
+export const useWatchRiverRegistryNodeAddedEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: riverRegistryAbi,
+    address: riverRegistryAddress,
+    eventName: 'NodeAdded',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link riverRegistryAbi}__ and `eventName` set to `"NodeRemoved"`
+ */
+export const useWatchRiverRegistryNodeRemovedEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: riverRegistryAbi,
+    address: riverRegistryAddress,
+    eventName: 'NodeRemoved',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link riverRegistryAbi}__ and `eventName` set to `"NodeStatusUpdated"`
+ */
+export const useWatchRiverRegistryNodeStatusUpdatedEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: riverRegistryAbi,
+    address: riverRegistryAddress,
+    eventName: 'NodeStatusUpdated',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link riverRegistryAbi}__ and `eventName` set to `"NodeUrlUpdated"`
+ */
+export const useWatchRiverRegistryNodeUrlUpdatedEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: riverRegistryAbi,
+    address: riverRegistryAddress,
+    eventName: 'NodeUrlUpdated',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link riverRegistryAbi}__ and `eventName` set to `"OperatorAdded"`
+ */
+export const useWatchRiverRegistryOperatorAddedEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: riverRegistryAbi,
+    address: riverRegistryAddress,
+    eventName: 'OperatorAdded',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link riverRegistryAbi}__ and `eventName` set to `"OperatorRemoved"`
+ */
+export const useWatchRiverRegistryOperatorRemovedEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: riverRegistryAbi,
+    address: riverRegistryAddress,
+    eventName: 'OperatorRemoved',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link riverRegistryAbi}__ and `eventName` set to `"OwnershipTransferred"`
+ */
+export const useWatchRiverRegistryOwnershipTransferredEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: riverRegistryAbi,
+    address: riverRegistryAddress,
+    eventName: 'OwnershipTransferred',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link riverRegistryAbi}__ and `eventName` set to `"StreamAllocated"`
+ */
+export const useWatchRiverRegistryStreamAllocatedEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: riverRegistryAbi,
+    address: riverRegistryAddress,
+    eventName: 'StreamAllocated',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link riverRegistryAbi}__ and `eventName` set to `"StreamLastMiniblockUpdateFailed"`
+ */
+export const useWatchRiverRegistryStreamLastMiniblockUpdateFailedEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: riverRegistryAbi,
+    address: riverRegistryAddress,
+    eventName: 'StreamLastMiniblockUpdateFailed',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link riverRegistryAbi}__ and `eventName` set to `"StreamLastMiniblockUpdated"`
+ */
+export const useWatchRiverRegistryStreamLastMiniblockUpdatedEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: riverRegistryAbi,
+    address: riverRegistryAddress,
+    eventName: 'StreamLastMiniblockUpdated',
+  })
+
+/**
+ * Wraps __{@link useWatchContractEvent}__ with `abi` set to __{@link riverRegistryAbi}__ and `eventName` set to `"StreamPlacementUpdated"`
+ */
+export const useWatchRiverRegistryStreamPlacementUpdatedEvent =
+  /*#__PURE__*/ createUseWatchContractEvent({
+    abi: riverRegistryAbi,
+    address: riverRegistryAddress,
+    eventName: 'StreamPlacementUpdated',
   })
 
 /**

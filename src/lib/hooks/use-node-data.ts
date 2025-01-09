@@ -21,7 +21,7 @@ export type NodeData = ReturnType<typeof useNodeData>[0]
 export const useNodeData = ({ initialData }: { initialData?: NodeStatusSchema} = {}) => {
     const { data } = useQuery({
         queryKey: ['nodeStatus'],
-        queryFn: getNodeData,
+        queryFn: () => getNodeData('omega'),
         refetchInterval: 30 * SECOND_MS,
         initialData,
     })

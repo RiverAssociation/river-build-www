@@ -19,7 +19,7 @@ const NodeAnimation = loadDynamic(
 )
 
 const StatusPage = async () => {
-  const initialData = await getNodeData().catch(() => undefined)
+  const initialData = await getNodeData('omega').catch(() => undefined)
 
   return (
     <div className="hero-glow mx-auto flex items-center justify-center px-4 pt-24 lg:pt-28">
