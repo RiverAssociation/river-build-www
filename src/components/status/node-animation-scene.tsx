@@ -1,7 +1,7 @@
 'use client'
 
 import { useGlobeTexture } from '@/lib/hooks/use-globe-texture'
-import { NodeData, useNodeData } from '@/lib/hooks/use-node-data'
+import { NodeDataWithStatus, useRiverNodes } from '@/lib/hooks/use-river-nodes'
 import { createNoise } from '@/lib/utils'
 import { animated, useSpring } from '@react-spring/three'
 import { PerspectiveCamera } from '@react-three/drei'
@@ -9,7 +9,7 @@ import { Canvas, useFrame } from '@react-three/fiber'
 import { useDrag } from '@use-gesture/react'
 import { useCallback, useMemo, useRef, useState } from 'react'
 import seedrandom from 'seedrandom'
-import { Color, Euler, Object3D } from 'three'
+import { Euler, Object3D } from 'three'
 import { GradientRing } from './gradient-ring'
 import { HomeDot } from './home-dot'
 import { NodeTooltips } from './node-tooltips'
@@ -22,9 +22,9 @@ export const NodeAnimationScene = () => {
 
   const containerRef = useRef<HTMLCanvasElement>(null)
 
-  const [hoveredNode, setHoveredNode] = useState<NodeData | null>(null)
+  const [hoveredNode, setHoveredNode] = useState<NodeDataWithStatus | null>(null)
 
-  const onNodeHover = useCallback((node: NodeData | null) => {
+  const onNodeHover = useCallback((node: NodeDataWithStatus | null) => {
     setHoveredNode(node)
   }, [])
 
@@ -50,19 +50,18 @@ export const NodeAnimationScene = () => {
 const GlobeScene = (props: {
   noise: ReturnType<typeof createNoise>
   mapSize: [number, number]
-  onNodeHover: (node: NodeData | null) => void
+  onNodeHover: (node: NodeDataWithStatus | null) => void
   onHover: (hovered: boolean) => void
 }) => {
   const { mapSize, noise } = props
   const { canvas, relevantPoints } = useGlobeTexture(noise, mapSize)
 
   const globeRef = useRef<Object3D>(null)
-  const nodeConnections = useNodeData()
+  const nodeConnections = useRiverNodes({ liveQuery: true })
 
   const nodes = useMemo(() => {
     return nodeConnections.map((n, index) => ({
       ...n,
-      color: new Color(n.color),
       offset: (1 / 3) * index + Math.random() * (0.9 / 3),
     }))
   }, [nodeConnections])

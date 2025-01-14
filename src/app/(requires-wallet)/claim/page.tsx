@@ -14,8 +14,8 @@ const Loading = () => {
   )
 }
 
-const ConnectWallet = dynamic(
-  () => import('../../../components/claim/connect-wallet').then((mod) => mod.ConnectWallet),
+const ConnectWalletSection = dynamic(
+  () => import('../../../components/claim/connect-wallet').then((mod) => mod.ConnectWalletSection),
   {
     loading: Loading,
     ssr: false,
@@ -32,7 +32,7 @@ const ClaimPage = dynamic(
 
 const Page = () => {
   const { isConnected } = useAccount()
-  return isConnected ? <ClaimPage /> : <ConnectWallet />
+  return isConnected ? <ClaimPage /> : <ConnectWalletSection />
 }
 
 export default Page

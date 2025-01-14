@@ -1,10 +1,10 @@
-import { NodeData } from '@/lib/hooks/use-node-data'
+import { NodeDataWithStatus } from '@/lib/hooks/use-river-nodes'
 import { formatUptime, formatUrl } from '@/lib/utils'
 import { AnimatePresence, motion } from 'framer-motion'
 import React, { forwardRef, useEffect, useRef } from 'react'
 
 type Props = {
-  hoveredNode: NodeData | null
+  hoveredNode: NodeDataWithStatus | null
   containerRef: React.RefObject<HTMLElement>
 }
 
@@ -50,27 +50,29 @@ export const NodeTooltips = (props: Props) => {
   )
 }
 
-const NodeTooltip = forwardRef<HTMLDivElement, { nodeData: NodeData }>(({ nodeData }, ref) => {
-  // TODO: Move colors to tailwind config
-  return (
-    <div
-      ref={ref}
-      className="flex min-w-full select-none flex-col gap-0.5 rounded-md border border-gray-30 bg-[#222026] px-2.5 py-1.5 shadow-sm"
-    >
-      <span className="text-nowrap text-xs" style={{ color: `#${nodeData.color.getHexString()}` }}>
-        {formatUrl(nodeData.nodeUrl)}
-      </span>
-      <span className="overflow-ellipsis text-xs text-[#8A8791]">
-        <span className="text-[#CECBD8]">Health </span>
-        {nodeData.data.grpc.elapsed} gRPC <span className='"text-[#CECBD8]'> &bull; </span>
-        {nodeData.data.http20.elapsed} HTTP/2
-      </span>
-      <span className="overflow-ellipsis text-xs text-[#8A8791] ">
-        <span className="text-[#CECBD8]">Uptime</span>{' '}
-        {formatUptime(new Date(nodeData.data.grpc.start_time))}
-      </span>
-    </div>
-  )
-})
+const NodeTooltip = forwardRef<HTMLDivElement, { nodeData: NodeDataWithStatus }>(
+  ({ nodeData }, ref) => {
+    // TODO: Move colors to tailwind config
+    return (
+      <div
+        ref={ref}
+        className="flex min-w-full select-none flex-col gap-0.5 rounded-md border border-gray-30 bg-[#222026] px-2.5 py-1.5 shadow-sm"
+      >
+        <span className="text-nowrap text-xs" style={{ color: nodeData.color }}>
+          {formatUrl(nodeData.nodeUrl)}
+        </span>
+        <span className="overflow-ellipsis text-xs text-[#8A8791]">
+          <span className="text-[#CECBD8]">Health </span>
+          {nodeData.data.grpc.elapsed} gRPC <span className='"text-[#CECBD8]'> &bull; </span>
+          {nodeData.data.http20.elapsed} HTTP/2
+        </span>
+        <span className="overflow-ellipsis text-xs text-[#8A8791]">
+          <span className="text-[#CECBD8]">Uptime</span>{' '}
+          {formatUptime(new Date(nodeData.data.grpc.start_time))}
+        </span>
+      </div>
+    )
+  },
+)
 
 NodeTooltip.displayName = 'NodeTooltips'

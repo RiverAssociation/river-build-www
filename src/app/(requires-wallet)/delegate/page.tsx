@@ -14,8 +14,9 @@ const Loading = () => {
   )
 }
 
-const ConnectWallet = dynamic(
-  () => import('../../../components/delegate/connect-wallet').then((mod) => mod.ConnectWallet),
+const ConnectWalletSection = dynamic(
+  () =>
+    import('../../../components/delegate/connect-wallet').then((mod) => mod.ConnectWalletSection),
   {
     loading: Loading,
     ssr: false,
@@ -32,7 +33,7 @@ const DelegateSection = dynamic(
 
 const DelegatePage = () => {
   const { isConnected } = useAccount()
-  return isConnected ? <DelegateSection /> : <ConnectWallet />
+  return isConnected ? <DelegateSection /> : <ConnectWalletSection />
 }
 
 export default DelegatePage

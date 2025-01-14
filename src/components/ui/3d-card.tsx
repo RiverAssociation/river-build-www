@@ -104,7 +104,7 @@ export const CardBody = ({
   return (
     <div
       className={cn(
-        'h-96 w-96 [transform-style:preserve-3d]  [&>*]:[transform-style:preserve-3d]',
+        'h-96 w-96 [transform-style:preserve-3d] [&>*]:[transform-style:preserve-3d]',
         className,
       )}
     >
@@ -151,11 +151,14 @@ export const CardItem = ({
       ref.current.style.transform = `translateX(0px) translateY(0px) translateZ(0px) rotateX(0deg) rotateY(0deg) rotateZ(0deg)`
     }
   }
-
-  return (
-    <Tag ref={ref} className={cn('w-fit transition duration-200 ease-linear', className)} {...rest}>
-      {children}
-    </Tag>
+  return React.createElement(
+    Tag,
+    {
+      ref,
+      className: cn('w-fit transition duration-200 ease-linear', className),
+      ...rest,
+    },
+    children,
   )
 }
 

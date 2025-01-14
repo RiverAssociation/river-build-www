@@ -7,9 +7,70 @@ import { cn } from '@/lib/utils'
 
 const TooltipProvider = TooltipPrimitive.Provider
 
-const Tooltip = TooltipPrimitive.Root
+type TooltipTriggerContextType = {
+  open: boolean
+  setOpen: React.Dispatch<React.SetStateAction<boolean>>
+}
 
-const TooltipTrigger = TooltipPrimitive.Trigger
+function useHasHover() {
+  try {
+    return matchMedia('(hover: hover)').matches
+  } catch {
+    // Assume that if browser too old to support matchMedia it's likely not a touch device
+    return true
+  }
+}
+
+export const TooltipTriggerContext = React.createContext<TooltipTriggerContextType>({
+  open: false,
+  setOpen: () => {}, // eslint-disable-line
+})
+
+const Tooltip: React.FC<TooltipPrimitive.TooltipProps> = ({ children, ...props }) => {
+  const [open, setOpen] = React.useState<boolean>(props.defaultOpen ?? false)
+  // we only want to enable the "click to open" functionality on mobile
+  const isDesktop = useHasHover()
+
+  return (
+    <TooltipPrimitive.Root
+      delayDuration={isDesktop ? props.delayDuration : 0}
+      onOpenChange={(e) => {
+        setOpen(e)
+      }}
+      open={open}
+    >
+      <TooltipTriggerContext.Provider value={{ open, setOpen }}>
+        {children}
+      </TooltipTriggerContext.Provider>
+    </TooltipPrimitive.Root>
+  )
+}
+
+const TooltipTrigger = React.forwardRef<
+  React.ElementRef<typeof TooltipPrimitive.Trigger>,
+  React.ComponentPropsWithoutRef<typeof TooltipPrimitive.Trigger>
+>(({ children, ...props }, ref) => {
+  // we only want to enable the "click to open" functionality on mobile
+  const isDesktop = useHasHover()
+  const { setOpen } = React.useContext(TooltipTriggerContext)
+
+  return (
+    <TooltipPrimitive.Trigger
+      ref={ref}
+      {...props}
+      onClick={(e) => {
+        if (!isDesktop) {
+          e.preventDefault()
+          setOpen(true)
+        }
+      }}
+    >
+      {children}
+    </TooltipPrimitive.Trigger>
+  )
+})
+
+TooltipTrigger.displayName = TooltipPrimitive.Trigger.displayName
 
 const TooltipContent = React.forwardRef<
   React.ElementRef<typeof TooltipPrimitive.Content>,

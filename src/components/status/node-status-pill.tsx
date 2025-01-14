@@ -1,4 +1,4 @@
-import { NodeData } from '@/lib/hooks/use-node-data'
+import { NodeDataWithStatus } from '@/lib/hooks/use-river-nodes'
 import { cn, formatUptime, formatUrl } from '@/lib/utils'
 import { Circle } from 'lucide-react'
 import { useMemo } from 'react'
@@ -15,7 +15,7 @@ type Status = {
   className: string
 }
 
-const getResponseStatus = (nodeData: NodeData) => {
+const getResponseStatus = (nodeData: NodeDataWithStatus) => {
   if (nodeData.status !== 2) {
     return undefined
   }
@@ -84,7 +84,7 @@ const NodeStatus: Status[] = [
   },
 ]
 
-export const NodeStatusPill = ({ nodeData }: { nodeData: NodeData }) => {
+export const NodeStatusPill = ({ nodeData }: { nodeData: NodeDataWithStatus }) => {
   const nodeStatusFromContract = NodeStatus[nodeData.data.record.status]
   const responseStatus = getResponseStatus(nodeData)
   // if node is operational, but has a non-OK response, it's down
@@ -111,7 +111,7 @@ export const NodeStatusPill = ({ nodeData }: { nodeData: NodeData }) => {
               <div className="grid w-full grid-cols-[5fr,2fr] gap-2">
                 <div
                   className="flex items-center gap-2 overflow-hidden"
-                  style={{ color: `#${nodeData.color.getHexString()}` }}
+                  style={{ color: nodeData.color }}
                 >
                   <StatusDot />
                   <Typography as="span" className="truncate text-inherit">

@@ -3,9 +3,13 @@ import Logo from '@/components/icons/Logo'
 import { links } from '@/constants/links'
 import { SiteDataQuery } from '@/gql/graphql'
 import useWindowSize from '@/lib/hooks/use-window-size'
-import { cn } from '@/lib/utils'
+import { cn, formatAddress } from '@/lib/utils'
 import useAppStore from '@/stores/app.store'
+import { useAppKit } from '@reown/appkit/react'
+import { ChevronDown } from 'lucide-react'
 import Link from 'next/link'
+import { usePathname } from 'next/navigation'
+import { useAccount } from 'wagmi'
 import { Blog } from '../icons/Blog'
 import { Github } from '../icons/Github'
 import { Towns } from '../icons/Towns'
@@ -17,6 +21,8 @@ import Developers from './developers'
 import Governance from './governance'
 import MobileDropownMenu from './mobile-dropdown-menu'
 
+const ROUTE_WITH_WALLET_BUTTON = ['/stake']
+
 type HeaderProps = {
   cms: SiteDataQuery
   withNetworkStatusBanner?: boolean
@@ -25,6 +31,8 @@ type HeaderProps = {
 export default function Header({ cms, withNetworkStatusBanner }: HeaderProps) {
   const { isMobile } = useWindowSize()
   const { isMobileMenuOpen, setIsMobileMenuOpen } = useAppStore()
+  const pathname = usePathname()
+  const isWalletButtonRoute = ROUTE_WITH_WALLET_BUTTON.includes(pathname)
 
   return (
     <header className="fixed top-0 z-50 flex w-full flex-col">
@@ -47,18 +55,24 @@ export default function Header({ cms, withNetworkStatusBanner }: HeaderProps) {
               <Community cms={cms} />
             </div>
             <div className="z-40 hidden items-center gap-6 lg:flex lg:justify-self-end">
-              <NavigationLink href={cms.globalLink?.townsUrl ?? links.Towns}>
-                <Towns />
-              </NavigationLink>
-              <NavigationLink href={cms.globalLink?.twitterUrl ?? links.X}>
-                <X />
-              </NavigationLink>
-              <NavigationLink href={cms.globalLink?.githubUrl ?? links.Github}>
-                <Github />
-              </NavigationLink>
-              <NavigationLink href={cms.globalLink?.blogUrl ?? links.Blog}>
-                <Blog />
-              </NavigationLink>
+              {isWalletButtonRoute ? (
+                <WalletButton />
+              ) : (
+                <>
+                  <NavigationLink href={cms.globalLink?.townsUrl ?? links.Towns}>
+                    <Towns />
+                  </NavigationLink>
+                  <NavigationLink href={cms.globalLink?.twitterUrl ?? links.X}>
+                    <X />
+                  </NavigationLink>
+                  <NavigationLink href={cms.globalLink?.githubUrl ?? links.Github}>
+                    <Github />
+                  </NavigationLink>
+                  <NavigationLink href={cms.globalLink?.blogUrl ?? links.Blog}>
+                    <Blog />
+                  </NavigationLink>
+                </>
+              )}
             </div>
             {isMobileMenuOpen && <div className="fixed top-0 z-10 h-16 w-full bg-gray-90" />}
             {isMobile && (
@@ -72,5 +86,27 @@ export default function Header({ cms, withNetworkStatusBanner }: HeaderProps) {
         </div>
       </div>
     </header>
+  )
+}
+
+const WalletButton = () => {
+  const { isConnected, address } = useAccount()
+  const { open } = useAppKit()
+
+  return (
+    <button
+      type="button"
+      className="flex items-center gap-2 rounded-full bg-[#3a394166]/40 px-3 py-2 text-sm"
+      onClick={() => open()}
+    >
+      {isConnected && address ? (
+        <>
+          <span>{formatAddress(address)}</span>
+          <ChevronDown className="h-3 w-3" aria-hidden="true" />
+        </>
+      ) : (
+        <span>Connect Wallet</span>
+      )}
+    </button>
   )
 }

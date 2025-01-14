@@ -1,4 +1,4 @@
-import { NodeData } from '@/lib/hooks/use-node-data'
+import { NodeDataWithStatus } from '@/lib/hooks/use-river-nodes'
 import { Billboard, Line, LineProps, RoundedBox } from '@react-three/drei'
 import { Object3DProps, useFrame } from '@react-three/fiber'
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
@@ -6,11 +6,11 @@ import { Color, Object3D, Vector3 } from 'three'
 import { Line2, LineSegments2 } from 'three-stdlib'
 
 type Props = {
-  nodes: NodeData[]
+  nodes: NodeDataWithStatus[]
   radius: number
   animating: boolean
-  onNodeHover: (node: NodeData | null) => void
-  connectedNode?: NodeData
+  onNodeHover: (node: NodeDataWithStatus | null) => void
+  connectedNode?: NodeDataWithStatus
 } & Object3DProps
 
 type NodeRef = {
@@ -49,7 +49,7 @@ export const GradientRing = (props: Props) => {
         ),
         vertexColors: Array.from({ length: numPoints }).map((_, i) => new Color(0xffffff)),
         bufferColors: Array.from({ length: numPoints * 3 }).map((_, i) => 0),
-      } as const),
+      }) as const,
   )
 
   const sortedColors = useMemo(() => nodes.map((n) => new Color(n.color)), [nodes])
@@ -113,11 +113,11 @@ export const GradientRing = (props: Props) => {
 
     if (g?.geometry && nodePositions.length) {
       const sortedNodes = nodePositions
-        .map((n) => ({ ...n, offset: n.offset % 1 }))
+        .map((n) => ({ ...n, offset: n.offset % 1, color: new Color(nodes[n.index].color) }))
         .sort((a, b) => a.offset - b.offset)
 
       sortedNodes.forEach((n, i) => {
-        sortedColors[i].lerp(nodes[n.index].color, 0.1)
+        sortedColors[i].lerp(n.color, 0.1)
       })
 
       vertexColors.map((c, i) => {
@@ -166,17 +166,17 @@ export const GradientRing = (props: Props) => {
     updateAnimation()
   }, [updateAnimation])
 
-  const [hoveredNode, setHoveredNode] = useState<NodeData | null>(null)
+  const [hoveredNode, setHoveredNode] = useState<NodeDataWithStatus | null>(null)
 
   useEffect(() => {
     props.onNodeHover(hoveredNode)
   }, [hoveredNode, props])
 
-  const onNodeHover = useCallback((node: NodeData) => {
+  const onNodeHover = useCallback((node: NodeDataWithStatus) => {
     setHoveredNode(node)
   }, [])
 
-  const onNodeLeave = useCallback((node: NodeData) => {
+  const onNodeLeave = useCallback((node: NodeDataWithStatus) => {
     setHoveredNode((n) => (n === node ? null : n))
   }, [])
 
@@ -205,10 +205,10 @@ export const GradientRing = (props: Props) => {
 }
 
 const CircleNode = (props: {
-  node: NodeData
+  node: NodeDataWithStatus
   nodePosition: NodeRef
-  onHover: (node: NodeData) => void
-  onLeave: (node: NodeData) => void
+  onHover: (node: NodeDataWithStatus) => void
+  onLeave: (node: NodeDataWithStatus) => void
   selected?: boolean
 }) => {
   const { node, nodePosition } = props

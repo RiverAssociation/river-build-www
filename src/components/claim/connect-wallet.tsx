@@ -1,11 +1,11 @@
 import { cn } from '@/lib/utils'
-import { useWeb3Modal } from '@web3modal/wagmi/react'
+import { useAppKit } from '@reown/appkit/react'
 import { Button } from '../ui/button'
 import { Typography } from '../ui/typography'
 import BeaverClaimAscii from './beaver-claim-ascii'
 
-export const ConnectWallet = () => {
-  const { open } = useWeb3Modal()
+export const ConnectWalletSection = () => {
+  const { open } = useAppKit()
   return (
     <section
       className={cn(
@@ -16,7 +16,7 @@ export const ConnectWallet = () => {
       )}
     >
       <div className="h-[310px]">
-        <BeaverClaimAscii className="size-full"  />
+        <BeaverClaimAscii className="size-full" />
       </div>
       <div className="flex flex-col items-center gap-2">
         <Typography

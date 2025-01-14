@@ -46,7 +46,7 @@ const Card = React.forwardRef<
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
       >
-        <div className={cn(' w-full rounded-3xl bg-gray-80', className)}>{children}</div>
+        <div className={cn('w-full rounded-3xl bg-gray-80', className)}>{children}</div>
       </div>
     )
   },

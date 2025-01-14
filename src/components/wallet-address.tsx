@@ -1,19 +1,20 @@
 import { useCopyToClipboard } from '@/lib/hooks/use-copy-to-clipboard'
-import { formatAddress } from '@/lib/utils'
+import { cn, formatAddress } from '@/lib/utils'
 import { Check, Copy } from 'lucide-react'
 import { Typography } from './ui/typography'
 
 type AddressProps = {
   address: `0x${string}`
+  className?: string
 }
 
-export const WalletAddress = ({ address }: AddressProps) => {
+export const WalletAddress = ({ address, className }: AddressProps) => {
   const { copy, hasCopied } = useCopyToClipboard()
 
   return (
     <Typography
       as="span"
-      className="flex items-center justify-center gap-2 text-inherit text-white"
+      className={cn('flex items-center justify-center gap-2 text-inherit text-white', className)}
     >
       {formatAddress(address)}
       {hasCopied ? (

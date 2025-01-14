@@ -1,14 +1,13 @@
 import { DOCS_URL } from '@/constants/links'
 import { cn } from '@/lib/utils'
-import { useWeb3Modal } from '@web3modal/wagmi/react'
 import { ChevronRight } from 'lucide-react'
 import Link from 'next/link'
 import { Button } from '../ui/button'
+import { ConnectWalletButton } from '../ui/connect-wallet-button'
 import { Typography } from '../ui/typography'
 import { DelegateAscii } from './delegate-ascii'
 
-export const ConnectWallet = () => {
-  const { open } = useWeb3Modal()
+export const ConnectWalletSection = () => {
   return (
     <section
       className={cn(
@@ -32,9 +31,7 @@ export const ConnectWallet = () => {
         </Typography>
       </div>
       <div className="flex flex-wrap items-center gap-2">
-        <Button variant="primary" onClick={() => open()}>
-          Connect Wallet
-        </Button>
+        <ConnectWalletButton>Connect Wallet</ConnectWalletButton>
         <Link href={`${DOCS_URL}/rvr-token/delegation`} target="_blank" rel="noopener noreferrer">
           <Button variant="secondary">
             <div className="flex items-center gap-1">

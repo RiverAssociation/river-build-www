@@ -1,6 +1,6 @@
 import { useClaim } from '@/lib/hooks/use-claim'
 import { cn } from '@/lib/utils'
-import { formatUnits } from 'viem'
+import { formatRVRAmount } from '@/lib/utils/formatRVRAmount'
 import { base, baseSepolia } from 'viem/chains'
 import { useAccount, useSwitchChain } from 'wagmi'
 import { Button } from '../ui/button'
@@ -80,7 +80,7 @@ export const ClaimPage = () => {
                     !!claimableBalance && 'font-mono font-medium tabular-nums',
                   )}
                 >
-                  {!claimableBalance ? 0 : formatUnits(claimableBalance, 18)}
+                  {!claimableBalance ? 0 : formatRVRAmount(claimableBalance)}
                 </Typography>
               )}
               <Button

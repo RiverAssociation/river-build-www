@@ -1,41 +1,51 @@
-import { isAddress } from 'viem'
+import { HOSTNAME_TO_OPERATOR_NAME } from '@/constants/hostname-to-operator'
+import type { RiverEnv } from '@/constants/river-env'
+import { SECOND_MS } from '@/constants/time-ms'
+import {
+  nodeOperatorAbi,
+  nodeOperatorAddress,
+  rewardsDistributionAbi,
+  rewardsDistributionAddress,
+  riverRegistryAbi,
+  riverRegistryAddress,
+} from '@/contracts'
+import { river, riverGamma } from '@/lib/riverChain'
+import { createPublicClient, http, isAddress, type Address } from 'viem'
+import { base, baseSepolia } from 'viem/chains'
 import { z } from 'zod'
 
-// TODO: [HNT-6333] The main node should be decided by making a read call from the RiverRegistry in RiverChain
-// instead of picking a random node from the hardcoded list.
-const nodes = [
-  'https://framework-1.nodes.towns-u4.com',
-  'https://framework-2.nodes.towns-u4.com',
-  'https://framework-3.nodes.towns-u4.com',
-  'https://haneda-1.nodes.towns-u4.com',
-  'https://haneda-2.nodes.towns-u4.com',
-  'https://hnt-labs-1.staking.production.figment.io',
-  'https://hnt-labs-2.staking.production.figment.io',
-  'https://hnt-labs-3.staking.production.figment.io',
-  'https://ohare-1.staking.production.figment.io',
-  'https://ohare-2.staking.production.figment.io',
-  'https://ohare-3.staking.production.figment.io',
-]
-
-const getRandomNode = (nodes: string[]) => {
-  return nodes[Math.floor(Math.random() * nodes.length)]
+const getRandomNode = async (env: RiverEnv) => {
+  const chain = env === 'gamma' ? riverGamma : river
+  const chainId = chain.id
+  const riverClient = createPublicClient({
+    chain,
+    transport: http(),
+  })
+  const nodes = await riverClient.readContract({
+    abi: riverRegistryAbi,
+    address: riverRegistryAddress[chainId],
+    functionName: 'getAllNodes',
+  })
+  const operationalNodes = nodes.filter((node) => node.status === 2)
+  const randomNode = operationalNodes[Math.floor(Math.random() * operationalNodes.length)]
+  return { node: randomNode, length: operationalNodes.length }
 }
 
-export const getNodeData = async () => {
-  const maxRetries = nodes.length
+export const getRiverNodes = async (env: RiverEnv) => {
   let attempts = 0
   let lastError
   let lastNode
-  let randomNode = getRandomNode(nodes)
+  let { node: randomNode, length: maxRetries } = await getRandomNode(env)
 
   while (attempts < maxRetries) {
     while (randomNode === lastNode) {
-      randomNode = getRandomNode(nodes)
+      randomNode = await getRandomNode(env).then(({ node }) => node)
     }
     try {
-      const res = await fetch(`${randomNode}/debug/multi/json`)
-      if (!res.ok) throw new Error(`${randomNode} failed with status: ${res.status}`)
-      return res.json() as Promise<NodeStatusSchema>
+      const res = await fetch(`${randomNode.url}/debug/multi/json`)
+      if (!res.ok) throw new Error(`${randomNode.url} failed with status: ${res.status}`)
+      const data = (await res.json()) as NodeDebugMultiJsonSchema
+      return data.nodes
     } catch (error) {
       attempts++
       lastError = error
@@ -50,9 +60,11 @@ export const getNodeData = async () => {
 }
 
 const zodAddress = z.string().refine(isAddress)
-export type NodeStatusSchema = z.infer<typeof nodeStatusSchema>
+export type NodeDebugMultiJsonSchema = z.infer<typeof nodeDebugMultiJsonSchema>
 
-export const nodeStatusSchema = z.object({
+export type NodeData = Awaited<ReturnType<typeof getRiverNodes>>[number]
+
+export const nodeDebugMultiJsonSchema = z.object({
   nodes: z.array(
     z.object({
       record: z.object({
@@ -126,3 +138,136 @@ export const nodeStatusSchema = z.object({
   query_time: z.string(),
   elapsed: z.string(),
 })
+
+const estimatedApyOfNetwork = (rewardRate: bigint, totalStaked: bigint) => {
+  const apy = (Number(rewardRate) / Number(totalStaked) / 1e36) * (365 * 24 * 60 * 60)
+  return apy
+}
+
+const operatorApr = (commissionRate: bigint, networkApr: number) => {
+  const commInBps = Number(commissionRate)
+  const apr = networkApr * (1 - commInBps / 10_000)
+  return apr
+}
+
+export type StackableOperator = {
+  name: string
+  nodes: NodeData[]
+  commissionPercentage: number
+  estimatedApr: number
+  address: Address
+  metrics: {
+    http20: number
+    grpc: number
+    grpc_start_time: string
+  }
+}
+
+export type StakeableOperatorsResponse = {
+  operators: StackableOperator[]
+  networkEstimatedApy: number
+}
+
+export const getStakeableOperators = async (env: 'gamma' | 'omega') => {
+  const chain = env === 'gamma' ? baseSepolia : base
+  const chainId = chain.id
+  const client = createPublicClient({
+    chain,
+    cacheTime: 30 * SECOND_MS,
+    transport: http(),
+  })
+  const stakingState = await client.readContract({
+    abi: rewardsDistributionAbi,
+    address: rewardsDistributionAddress[chainId],
+    functionName: 'stakingState',
+  })
+  const networkApy = estimatedApyOfNetwork(stakingState.rewardRate, stakingState.totalStaked)
+  const nodes = await getRiverNodes(env)
+  const uniqueOperators = Array.from(new Set(nodes.map((node) => node.record.operator)))
+
+  const commissionRates = await Promise.all(
+    uniqueOperators.map((operator) =>
+      client.readContract({
+        abi: nodeOperatorAbi,
+        address: nodeOperatorAddress[chainId],
+        functionName: 'getCommissionRate',
+        args: [operator],
+      }),
+    ),
+  )
+  const operatorCommissionMap = uniqueOperators.reduce<Record<Address, bigint>>(
+    (map, operator, index) => {
+      map[operator] = commissionRates[index]
+      return map
+    },
+    {},
+  )
+
+  const operatorMap = nodes.reduce<Record<string, NodeData[]>>((map, node) => {
+    const operatorAddress = node.record.operator
+    if (!map[operatorAddress]) {
+      map[operatorAddress] = []
+    }
+    map[operatorAddress].push(node)
+    return map
+  }, {})
+
+  const operatorNameOccurency: Record<string, number> = {}
+
+  // Group nodes by unique operator address
+  const operators = uniqueOperators.map((operatorAddress) => {
+    const nodes = operatorMap[operatorAddress]
+    const commissionRateInBps = operatorCommissionMap[operatorAddress]
+    const estimatedApr = operatorApr(commissionRateInBps, networkApy)
+
+    // Use first node's URL to derive operator name
+    const hostname = new URL(nodes[0].record.url).hostname
+    // return fancy name if key matches the expected hostname
+    const displayName = Object.entries(HOSTNAME_TO_OPERATOR_NAME).find(([key]) =>
+      hostname.includes(key),
+    )?.[1]
+    const name = displayName ?? hostname
+    operatorNameOccurency[name] = (operatorNameOccurency?.[name] ?? 0) + 1
+    const occurency = operatorNameOccurency[name]
+
+    const http20Elapsed = nodes
+      .map((node) => parseLatency(node.http20.elapsed))
+      .filter((latency) => latency !== undefined) as number[]
+    const grpcElapsed = nodes
+      .map((node) => parseLatency(node.grpc.elapsed))
+      .filter((latency) => latency !== undefined) as number[]
+
+    return {
+      name: `${name} ${occurency}`,
+      nodes,
+      commissionPercentage: Number(commissionRateInBps) / 100,
+      estimatedApr,
+      metrics: {
+        http20: http20Elapsed.length ? Math.round(getMedian(http20Elapsed)) : 0,
+        grpc: grpcElapsed.length ? Math.round(getMedian(grpcElapsed)) : 0,
+        // TODO: median of uptime
+        grpc_start_time: nodes[0].grpc.start_time,
+      },
+      address: operatorAddress,
+    }
+  })
+
+  return {
+    operators,
+    networkEstimatedApy: networkApy,
+  }
+}
+
+const getMedian = (arr: number[]) => {
+  if (!arr.length) return 0
+  if (arr.length === 1) return arr[0]
+  const sorted = [...arr].sort((a, b) => a - b)
+  const mid = Math.floor(sorted.length / 2)
+  return sorted.length % 2 === 0 ? (sorted[mid - 1] + sorted[mid]) / 2 : sorted[mid]
+}
+
+const parseLatency = (latency: string) => {
+  if (!latency) return
+  const [value] = latency.split('ms')
+  return Number(value)
+}

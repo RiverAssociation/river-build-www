@@ -11,6 +11,7 @@ import { siteDataQuery } from '@/gql/query'
 import { GeistSans } from 'geist/font/sans'
 import { Metadata } from 'next'
 import localFont from 'next/font/local'
+import { Providers } from './providers'
 
 // Font files can be colocated inside of `pages`
 const menloFont = localFont({ src: '../lib/fonts/Menlo-Regular.woff', variable: '--font-menlo' })
@@ -58,16 +59,19 @@ export default async function RootLayout({ children }: { children: React.ReactNo
         <meta name="theme-color" content="#02000a" />
         <meta name="theme-color" content="#02000a" media="(prefers-color-scheme: light)" />
         <meta name="theme-color" content="#02000a" media="(prefers-color-scheme: dark)" />
+        <meta name="color-scheme" content="dark" />
       </head>
 
       <body>
-        <main className={`${GeistSans.variable} font-primary ${menloFont.variable}`}>
-          <Header cms={cmsData} />
-          {children}
-          <Footer cms={cmsData} />
-          <Toaster />
-          <TailwindIndicator />
-        </main>
+        <Providers>
+          <main className={`${GeistSans.variable} font-primary ${menloFont.variable}`}>
+            <Header cms={cmsData} />
+            {children}
+            <Footer cms={cmsData} />
+            <Toaster />
+            <TailwindIndicator />
+          </main>
+        </Providers>
       </body>
     </html>
   )

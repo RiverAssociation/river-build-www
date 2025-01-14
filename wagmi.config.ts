@@ -1,3 +1,4 @@
+import { river, riverGamma } from '@/lib/riverChain'
 import gamma from '@river-build/generated/deployments/gamma/base/addresses/baseRegistry.json' with { type:
   'json' }
 import omega from '@river-build/generated/deployments/omega/base/addresses/baseRegistry.json' with { type:
@@ -13,7 +14,7 @@ const env = loadEnv({
   envDir: process.cwd(),
 })
 
-// https://sepolia.basescan.org/address/0x1bDcd58340c47Bb30A4fbD83016bBea2C63dE130#code
+// https://sepolia.basescan.org/address/0x2852B5F72eE5A8867563c55547C1376CbbbBC7B3#code
 const rewardDistributionAbi = [
   {
     inputs: [
@@ -189,6 +190,12 @@ const rewardDistributionAbi = [
   },
   {
     anonymous: false,
+    inputs: [{ indexed: false, internalType: 'uint256', name: 'amount', type: 'uint256' }],
+    name: 'PeriodRewardAmountSet',
+    type: 'event',
+  },
+  {
+    anonymous: false,
     inputs: [
       { indexed: true, internalType: 'uint256', name: 'depositId', type: 'uint256' },
       { indexed: true, internalType: 'address', name: 'delegatee', type: 'address' },
@@ -341,6 +348,13 @@ const rewardDistributionAbi = [
   },
   {
     inputs: [],
+    name: 'getPeriodRewardAmount',
+    outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [],
     name: 'implementation',
     outputs: [{ internalType: 'address', name: 'result', type: 'address' }],
     stateMutability: 'view',
@@ -405,6 +419,13 @@ const rewardDistributionAbi = [
       { internalType: 'address', name: 'delegatee', type: 'address' },
     ],
     name: 'redelegate',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [{ internalType: 'uint256', name: 'amount', type: 'uint256' }],
+    name: 'setPeriodRewardAmount',
     outputs: [],
     stateMutability: 'nonpayable',
     type: 'function',
@@ -1344,7 +1365,1643 @@ const riverTokenAbi = [
   },
 ] as const
 
-const mainnetRiverTokenAddress = '0x53319181e003E7f86fB79f794649a2aB680Db244' satisfies Address
+const nodeOperatorAbi = [
+  { inputs: [], name: 'ApprovalCallerNotOwnerNorApproved', type: 'error' },
+  { inputs: [], name: 'ApprovalQueryForNonexistentToken', type: 'error' },
+  { inputs: [], name: 'BalanceQueryForZeroAddress', type: 'error' },
+  { inputs: [], name: 'Initializable_InInitializingState', type: 'error' },
+  { inputs: [], name: 'Initializable_NotInInitializingState', type: 'error' },
+  { inputs: [], name: 'Introspection_AlreadySupported', type: 'error' },
+  { inputs: [], name: 'Introspection_NotSupported', type: 'error' },
+  { inputs: [], name: 'MintERC2309QuantityExceedsLimit', type: 'error' },
+  { inputs: [], name: 'MintToZeroAddress', type: 'error' },
+  { inputs: [], name: 'MintZeroQuantity', type: 'error' },
+  {
+    inputs: [{ internalType: 'address', name: 'operator', type: 'address' }],
+    name: 'NodeOperator__AlreadyDelegated',
+    type: 'error',
+  },
+  { inputs: [], name: 'NodeOperator__AlreadyRegistered', type: 'error' },
+  { inputs: [], name: 'NodeOperator__ClaimAddressNotChanged', type: 'error' },
+  { inputs: [], name: 'NodeOperator__InvalidAddress', type: 'error' },
+  { inputs: [], name: 'NodeOperator__InvalidCommissionRate', type: 'error' },
+  { inputs: [], name: 'NodeOperator__InvalidOperator', type: 'error' },
+  { inputs: [], name: 'NodeOperator__InvalidSpace', type: 'error' },
+  { inputs: [], name: 'NodeOperator__InvalidStakeRequirement', type: 'error' },
+  { inputs: [], name: 'NodeOperator__InvalidStatusTransition', type: 'error' },
+  { inputs: [], name: 'NodeOperator__NotClaimer', type: 'error' },
+  { inputs: [], name: 'NodeOperator__NotEnoughStake', type: 'error' },
+  { inputs: [], name: 'NodeOperator__NotRegistered', type: 'error' },
+  { inputs: [], name: 'NodeOperator__NotTransferable', type: 'error' },
+  { inputs: [], name: 'NodeOperator__StatusNotChanged', type: 'error' },
+  {
+    inputs: [{ internalType: 'address', name: 'account', type: 'address' }],
+    name: 'Ownable__NotOwner',
+    type: 'error',
+  },
+  { inputs: [], name: 'Ownable__ZeroAddress', type: 'error' },
+  { inputs: [], name: 'OwnerQueryForNonexistentToken', type: 'error' },
+  { inputs: [], name: 'OwnershipNotInitializedForExtraData', type: 'error' },
+  { inputs: [], name: 'TransferCallerNotOwnerNorApproved', type: 'error' },
+  { inputs: [], name: 'TransferFromIncorrectOwner', type: 'error' },
+  { inputs: [], name: 'TransferToNonERC721ReceiverImplementer', type: 'error' },
+  { inputs: [], name: 'TransferToZeroAddress', type: 'error' },
+  { inputs: [], name: 'URIQueryForNonexistentToken', type: 'error' },
+  {
+    anonymous: false,
+    inputs: [
+      { indexed: true, internalType: 'address', name: 'owner', type: 'address' },
+      { indexed: true, internalType: 'address', name: 'approved', type: 'address' },
+      { indexed: true, internalType: 'uint256', name: 'tokenId', type: 'uint256' },
+    ],
+    name: 'Approval',
+    type: 'event',
+  },
+  {
+    anonymous: false,
+    inputs: [
+      { indexed: true, internalType: 'address', name: 'owner', type: 'address' },
+      { indexed: true, internalType: 'address', name: 'operator', type: 'address' },
+      { indexed: false, internalType: 'bool', name: 'approved', type: 'bool' },
+    ],
+    name: 'ApprovalForAll',
+    type: 'event',
+  },
+  {
+    anonymous: false,
+    inputs: [
+      { indexed: true, internalType: 'uint256', name: 'fromTokenId', type: 'uint256' },
+      { indexed: false, internalType: 'uint256', name: 'toTokenId', type: 'uint256' },
+      { indexed: true, internalType: 'address', name: 'from', type: 'address' },
+      { indexed: true, internalType: 'address', name: 'to', type: 'address' },
+    ],
+    name: 'ConsecutiveTransfer',
+    type: 'event',
+  },
+  {
+    anonymous: false,
+    inputs: [{ indexed: false, internalType: 'uint32', name: 'version', type: 'uint32' }],
+    name: 'Initialized',
+    type: 'event',
+  },
+  {
+    anonymous: false,
+    inputs: [{ indexed: true, internalType: 'bytes4', name: 'interfaceId', type: 'bytes4' }],
+    name: 'InterfaceAdded',
+    type: 'event',
+  },
+  {
+    anonymous: false,
+    inputs: [{ indexed: true, internalType: 'bytes4', name: 'interfaceId', type: 'bytes4' }],
+    name: 'InterfaceRemoved',
+    type: 'event',
+  },
+  {
+    anonymous: false,
+    inputs: [
+      { indexed: true, internalType: 'address', name: 'operator', type: 'address' },
+      { indexed: true, internalType: 'address', name: 'claimAddress', type: 'address' },
+    ],
+    name: 'OperatorClaimAddressChanged',
+    type: 'event',
+  },
+  {
+    anonymous: false,
+    inputs: [
+      { indexed: true, internalType: 'address', name: 'operator', type: 'address' },
+      { indexed: true, internalType: 'uint256', name: 'commission', type: 'uint256' },
+    ],
+    name: 'OperatorCommissionChanged',
+    type: 'event',
+  },
+  {
+    anonymous: false,
+    inputs: [{ indexed: true, internalType: 'address', name: 'operator', type: 'address' }],
+    name: 'OperatorRegistered',
+    type: 'event',
+  },
+  {
+    anonymous: false,
+    inputs: [
+      { indexed: true, internalType: 'address', name: 'operator', type: 'address' },
+      { indexed: true, internalType: 'enum NodeOperatorStatus', name: 'newStatus', type: 'uint8' },
+    ],
+    name: 'OperatorStatusChanged',
+    type: 'event',
+  },
+  {
+    anonymous: false,
+    inputs: [
+      { indexed: true, internalType: 'address', name: 'previousOwner', type: 'address' },
+      { indexed: true, internalType: 'address', name: 'newOwner', type: 'address' },
+    ],
+    name: 'OwnershipTransferred',
+    type: 'event',
+  },
+  {
+    anonymous: false,
+    inputs: [
+      { indexed: true, internalType: 'address', name: 'from', type: 'address' },
+      { indexed: true, internalType: 'address', name: 'to', type: 'address' },
+      { indexed: true, internalType: 'uint256', name: 'tokenId', type: 'uint256' },
+    ],
+    name: 'Transfer',
+    type: 'event',
+  },
+  {
+    inputs: [],
+    name: '__NodeOperator_init',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [{ internalType: 'address', name: 'operator', type: 'address' }],
+    name: 'getClaimAddressForOperator',
+    outputs: [{ internalType: 'address', name: '', type: 'address' }],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [{ internalType: 'address', name: 'operator', type: 'address' }],
+    name: 'getCommissionRate',
+    outputs: [{ internalType: 'uint256', name: '', type: 'uint256' }],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [{ internalType: 'address', name: 'operator', type: 'address' }],
+    name: 'getOperatorStatus',
+    outputs: [{ internalType: 'enum NodeOperatorStatus', name: '', type: 'uint8' }],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [],
+    name: 'getOperators',
+    outputs: [{ internalType: 'address[]', name: '', type: 'address[]' }],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [{ internalType: 'address', name: 'operator', type: 'address' }],
+    name: 'isOperator',
+    outputs: [{ internalType: 'bool', name: '', type: 'bool' }],
+    stateMutability: 'view',
+    type: 'function',
+  },
+  {
+    inputs: [{ internalType: 'address', name: 'claimer', type: 'address' }],
+    name: 'registerOperator',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [
+      { internalType: 'address', name: 'claimer', type: 'address' },
+      { internalType: 'address', name: 'operator', type: 'address' },
+    ],
+    name: 'setClaimAddressForOperator',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [{ internalType: 'uint256', name: 'rateBps', type: 'uint256' }],
+    name: 'setCommissionRate',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+  {
+    inputs: [
+      { internalType: 'address', name: 'operator', type: 'address' },
+      { internalType: 'enum NodeOperatorStatus', name: 'newStatus', type: 'uint8' },
+    ],
+    name: 'setOperatorStatus',
+    outputs: [],
+    stateMutability: 'nonpayable',
+    type: 'function',
+  },
+] as const
+
+export const riverRegistryAbi = [
+  {
+    type: 'constructor',
+    inputs: [
+      {
+        name: 'approvedOperators',
+        type: 'address[]',
+        internalType: 'address[]',
+      },
+    ],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    name: '__OperatorRegistry_init',
+    inputs: [
+      {
+        name: 'initialOperators',
+        type: 'address[]',
+        internalType: 'address[]',
+      },
+    ],
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    name: '__RiverConfig_init',
+    inputs: [
+      {
+        name: 'configManagers',
+        type: 'address[]',
+        internalType: 'address[]',
+      },
+    ],
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    name: 'allocateStream',
+    inputs: [
+      {
+        name: 'streamId',
+        type: 'bytes32',
+        internalType: 'bytes32',
+      },
+      {
+        name: 'nodes',
+        type: 'address[]',
+        internalType: 'address[]',
+      },
+      {
+        name: 'genesisMiniblockHash',
+        type: 'bytes32',
+        internalType: 'bytes32',
+      },
+      {
+        name: 'genesisMiniblock',
+        type: 'bytes',
+        internalType: 'bytes',
+      },
+    ],
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    name: 'approveConfigurationManager',
+    inputs: [
+      {
+        name: 'manager',
+        type: 'address',
+        internalType: 'address',
+      },
+    ],
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    name: 'approveOperator',
+    inputs: [
+      {
+        name: 'operator',
+        type: 'address',
+        internalType: 'address',
+      },
+    ],
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    name: 'configurationExists',
+    inputs: [
+      {
+        name: 'key',
+        type: 'bytes32',
+        internalType: 'bytes32',
+      },
+    ],
+    outputs: [
+      {
+        name: '',
+        type: 'bool',
+        internalType: 'bool',
+      },
+    ],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    name: 'deleteConfiguration',
+    inputs: [
+      {
+        name: 'key',
+        type: 'bytes32',
+        internalType: 'bytes32',
+      },
+    ],
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    name: 'deleteConfigurationOnBlock',
+    inputs: [
+      {
+        name: 'key',
+        type: 'bytes32',
+        internalType: 'bytes32',
+      },
+      {
+        name: 'blockNumber',
+        type: 'uint64',
+        internalType: 'uint64',
+      },
+    ],
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    name: 'getAllConfiguration',
+    inputs: [],
+    outputs: [
+      {
+        name: '',
+        type: 'tuple[]',
+        internalType: 'struct Setting[]',
+        components: [
+          {
+            name: 'key',
+            type: 'bytes32',
+            internalType: 'bytes32',
+          },
+          {
+            name: 'blockNumber',
+            type: 'uint64',
+            internalType: 'uint64',
+          },
+          {
+            name: 'value',
+            type: 'bytes',
+            internalType: 'bytes',
+          },
+        ],
+      },
+    ],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    name: 'getAllNodeAddresses',
+    inputs: [],
+    outputs: [
+      {
+        name: '',
+        type: 'address[]',
+        internalType: 'address[]',
+      },
+    ],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    name: 'getAllNodes',
+    inputs: [],
+    outputs: [
+      {
+        name: '',
+        type: 'tuple[]',
+        internalType: 'struct Node[]',
+        components: [
+          {
+            name: 'status',
+            type: 'uint8',
+            internalType: 'enum NodeStatus',
+          },
+          {
+            name: 'url',
+            type: 'string',
+            internalType: 'string',
+          },
+          {
+            name: 'nodeAddress',
+            type: 'address',
+            internalType: 'address',
+          },
+          {
+            name: 'operator',
+            type: 'address',
+            internalType: 'address',
+          },
+        ],
+      },
+    ],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    name: 'getAllOperators',
+    inputs: [],
+    outputs: [
+      {
+        name: '',
+        type: 'address[]',
+        internalType: 'address[]',
+      },
+    ],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    name: 'getAllStreamIds',
+    inputs: [],
+    outputs: [
+      {
+        name: '',
+        type: 'bytes32[]',
+        internalType: 'bytes32[]',
+      },
+    ],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    name: 'getAllStreams',
+    inputs: [],
+    outputs: [
+      {
+        name: '',
+        type: 'tuple[]',
+        internalType: 'struct StreamWithId[]',
+        components: [
+          {
+            name: 'id',
+            type: 'bytes32',
+            internalType: 'bytes32',
+          },
+          {
+            name: 'stream',
+            type: 'tuple',
+            internalType: 'struct Stream',
+            components: [
+              {
+                name: 'lastMiniblockHash',
+                type: 'bytes32',
+                internalType: 'bytes32',
+              },
+              {
+                name: 'lastMiniblockNum',
+                type: 'uint64',
+                internalType: 'uint64',
+              },
+              {
+                name: 'reserved0',
+                type: 'uint64',
+                internalType: 'uint64',
+              },
+              {
+                name: 'flags',
+                type: 'uint64',
+                internalType: 'uint64',
+              },
+              {
+                name: 'nodes',
+                type: 'address[]',
+                internalType: 'address[]',
+              },
+            ],
+          },
+        ],
+      },
+    ],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    name: 'getConfiguration',
+    inputs: [
+      {
+        name: 'key',
+        type: 'bytes32',
+        internalType: 'bytes32',
+      },
+    ],
+    outputs: [
+      {
+        name: '',
+        type: 'tuple[]',
+        internalType: 'struct Setting[]',
+        components: [
+          {
+            name: 'key',
+            type: 'bytes32',
+            internalType: 'bytes32',
+          },
+          {
+            name: 'blockNumber',
+            type: 'uint64',
+            internalType: 'uint64',
+          },
+          {
+            name: 'value',
+            type: 'bytes',
+            internalType: 'bytes',
+          },
+        ],
+      },
+    ],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    name: 'getNode',
+    inputs: [
+      {
+        name: 'nodeAddress',
+        type: 'address',
+        internalType: 'address',
+      },
+    ],
+    outputs: [
+      {
+        name: '',
+        type: 'tuple',
+        internalType: 'struct Node',
+        components: [
+          {
+            name: 'status',
+            type: 'uint8',
+            internalType: 'enum NodeStatus',
+          },
+          {
+            name: 'url',
+            type: 'string',
+            internalType: 'string',
+          },
+          {
+            name: 'nodeAddress',
+            type: 'address',
+            internalType: 'address',
+          },
+          {
+            name: 'operator',
+            type: 'address',
+            internalType: 'address',
+          },
+        ],
+      },
+    ],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    name: 'getNodeCount',
+    inputs: [],
+    outputs: [
+      {
+        name: '',
+        type: 'uint256',
+        internalType: 'uint256',
+      },
+    ],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    name: 'getPaginatedStreams',
+    inputs: [
+      {
+        name: 'start',
+        type: 'uint256',
+        internalType: 'uint256',
+      },
+      {
+        name: 'stop',
+        type: 'uint256',
+        internalType: 'uint256',
+      },
+    ],
+    outputs: [
+      {
+        name: '',
+        type: 'tuple[]',
+        internalType: 'struct StreamWithId[]',
+        components: [
+          {
+            name: 'id',
+            type: 'bytes32',
+            internalType: 'bytes32',
+          },
+          {
+            name: 'stream',
+            type: 'tuple',
+            internalType: 'struct Stream',
+            components: [
+              {
+                name: 'lastMiniblockHash',
+                type: 'bytes32',
+                internalType: 'bytes32',
+              },
+              {
+                name: 'lastMiniblockNum',
+                type: 'uint64',
+                internalType: 'uint64',
+              },
+              {
+                name: 'reserved0',
+                type: 'uint64',
+                internalType: 'uint64',
+              },
+              {
+                name: 'flags',
+                type: 'uint64',
+                internalType: 'uint64',
+              },
+              {
+                name: 'nodes',
+                type: 'address[]',
+                internalType: 'address[]',
+              },
+            ],
+          },
+        ],
+      },
+      {
+        name: '',
+        type: 'bool',
+        internalType: 'bool',
+      },
+    ],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    name: 'getStream',
+    inputs: [
+      {
+        name: 'streamId',
+        type: 'bytes32',
+        internalType: 'bytes32',
+      },
+    ],
+    outputs: [
+      {
+        name: '',
+        type: 'tuple',
+        internalType: 'struct Stream',
+        components: [
+          {
+            name: 'lastMiniblockHash',
+            type: 'bytes32',
+            internalType: 'bytes32',
+          },
+          {
+            name: 'lastMiniblockNum',
+            type: 'uint64',
+            internalType: 'uint64',
+          },
+          {
+            name: 'reserved0',
+            type: 'uint64',
+            internalType: 'uint64',
+          },
+          {
+            name: 'flags',
+            type: 'uint64',
+            internalType: 'uint64',
+          },
+          {
+            name: 'nodes',
+            type: 'address[]',
+            internalType: 'address[]',
+          },
+        ],
+      },
+    ],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    name: 'getStreamByIndex',
+    inputs: [
+      {
+        name: 'i',
+        type: 'uint256',
+        internalType: 'uint256',
+      },
+    ],
+    outputs: [
+      {
+        name: '',
+        type: 'tuple',
+        internalType: 'struct StreamWithId',
+        components: [
+          {
+            name: 'id',
+            type: 'bytes32',
+            internalType: 'bytes32',
+          },
+          {
+            name: 'stream',
+            type: 'tuple',
+            internalType: 'struct Stream',
+            components: [
+              {
+                name: 'lastMiniblockHash',
+                type: 'bytes32',
+                internalType: 'bytes32',
+              },
+              {
+                name: 'lastMiniblockNum',
+                type: 'uint64',
+                internalType: 'uint64',
+              },
+              {
+                name: 'reserved0',
+                type: 'uint64',
+                internalType: 'uint64',
+              },
+              {
+                name: 'flags',
+                type: 'uint64',
+                internalType: 'uint64',
+              },
+              {
+                name: 'nodes',
+                type: 'address[]',
+                internalType: 'address[]',
+              },
+            ],
+          },
+        ],
+      },
+    ],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    name: 'getStreamCount',
+    inputs: [],
+    outputs: [
+      {
+        name: '',
+        type: 'uint256',
+        internalType: 'uint256',
+      },
+    ],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    name: 'getStreamCountOnNode',
+    inputs: [
+      {
+        name: 'nodeAddress',
+        type: 'address',
+        internalType: 'address',
+      },
+    ],
+    outputs: [
+      {
+        name: '',
+        type: 'uint256',
+        internalType: 'uint256',
+      },
+    ],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    name: 'getStreamWithGenesis',
+    inputs: [
+      {
+        name: 'streamId',
+        type: 'bytes32',
+        internalType: 'bytes32',
+      },
+    ],
+    outputs: [
+      {
+        name: '',
+        type: 'tuple',
+        internalType: 'struct Stream',
+        components: [
+          {
+            name: 'lastMiniblockHash',
+            type: 'bytes32',
+            internalType: 'bytes32',
+          },
+          {
+            name: 'lastMiniblockNum',
+            type: 'uint64',
+            internalType: 'uint64',
+          },
+          {
+            name: 'reserved0',
+            type: 'uint64',
+            internalType: 'uint64',
+          },
+          {
+            name: 'flags',
+            type: 'uint64',
+            internalType: 'uint64',
+          },
+          {
+            name: 'nodes',
+            type: 'address[]',
+            internalType: 'address[]',
+          },
+        ],
+      },
+      {
+        name: '',
+        type: 'bytes32',
+        internalType: 'bytes32',
+      },
+      {
+        name: '',
+        type: 'bytes',
+        internalType: 'bytes',
+      },
+    ],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    name: 'getStreams',
+    inputs: [
+      {
+        name: 'streamIds',
+        type: 'bytes32[]',
+        internalType: 'bytes32[]',
+      },
+    ],
+    outputs: [
+      {
+        name: 'foundCount',
+        type: 'uint256',
+        internalType: 'uint256',
+      },
+      {
+        name: '',
+        type: 'tuple[]',
+        internalType: 'struct StreamWithId[]',
+        components: [
+          {
+            name: 'id',
+            type: 'bytes32',
+            internalType: 'bytes32',
+          },
+          {
+            name: 'stream',
+            type: 'tuple',
+            internalType: 'struct Stream',
+            components: [
+              {
+                name: 'lastMiniblockHash',
+                type: 'bytes32',
+                internalType: 'bytes32',
+              },
+              {
+                name: 'lastMiniblockNum',
+                type: 'uint64',
+                internalType: 'uint64',
+              },
+              {
+                name: 'reserved0',
+                type: 'uint64',
+                internalType: 'uint64',
+              },
+              {
+                name: 'flags',
+                type: 'uint64',
+                internalType: 'uint64',
+              },
+              {
+                name: 'nodes',
+                type: 'address[]',
+                internalType: 'address[]',
+              },
+            ],
+          },
+        ],
+      },
+    ],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    name: 'getStreamsOnNode',
+    inputs: [
+      {
+        name: 'nodeAddress',
+        type: 'address',
+        internalType: 'address',
+      },
+    ],
+    outputs: [
+      {
+        name: '',
+        type: 'tuple[]',
+        internalType: 'struct StreamWithId[]',
+        components: [
+          {
+            name: 'id',
+            type: 'bytes32',
+            internalType: 'bytes32',
+          },
+          {
+            name: 'stream',
+            type: 'tuple',
+            internalType: 'struct Stream',
+            components: [
+              {
+                name: 'lastMiniblockHash',
+                type: 'bytes32',
+                internalType: 'bytes32',
+              },
+              {
+                name: 'lastMiniblockNum',
+                type: 'uint64',
+                internalType: 'uint64',
+              },
+              {
+                name: 'reserved0',
+                type: 'uint64',
+                internalType: 'uint64',
+              },
+              {
+                name: 'flags',
+                type: 'uint64',
+                internalType: 'uint64',
+              },
+              {
+                name: 'nodes',
+                type: 'address[]',
+                internalType: 'address[]',
+              },
+            ],
+          },
+        ],
+      },
+    ],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    name: 'isConfigurationManager',
+    inputs: [
+      {
+        name: 'manager',
+        type: 'address',
+        internalType: 'address',
+      },
+    ],
+    outputs: [
+      {
+        name: '',
+        type: 'bool',
+        internalType: 'bool',
+      },
+    ],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    name: 'isOperator',
+    inputs: [
+      {
+        name: 'operator',
+        type: 'address',
+        internalType: 'address',
+      },
+    ],
+    outputs: [
+      {
+        name: '',
+        type: 'bool',
+        internalType: 'bool',
+      },
+    ],
+    stateMutability: 'view',
+  },
+  {
+    type: 'function',
+    name: 'placeStreamOnNode',
+    inputs: [
+      {
+        name: 'streamId',
+        type: 'bytes32',
+        internalType: 'bytes32',
+      },
+      {
+        name: 'nodeAddress',
+        type: 'address',
+        internalType: 'address',
+      },
+    ],
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    name: 'registerNode',
+    inputs: [
+      {
+        name: 'nodeAddress',
+        type: 'address',
+        internalType: 'address',
+      },
+      {
+        name: 'url',
+        type: 'string',
+        internalType: 'string',
+      },
+      {
+        name: 'status',
+        type: 'uint8',
+        internalType: 'enum NodeStatus',
+      },
+    ],
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    name: 'removeConfigurationManager',
+    inputs: [
+      {
+        name: 'manager',
+        type: 'address',
+        internalType: 'address',
+      },
+    ],
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    name: 'removeNode',
+    inputs: [
+      {
+        name: 'nodeAddress',
+        type: 'address',
+        internalType: 'address',
+      },
+    ],
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    name: 'removeOperator',
+    inputs: [
+      {
+        name: 'operator',
+        type: 'address',
+        internalType: 'address',
+      },
+    ],
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    name: 'removeStreamFromNode',
+    inputs: [
+      {
+        name: 'streamId',
+        type: 'bytes32',
+        internalType: 'bytes32',
+      },
+      {
+        name: 'nodeAddress',
+        type: 'address',
+        internalType: 'address',
+      },
+    ],
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    name: 'setConfiguration',
+    inputs: [
+      {
+        name: 'key',
+        type: 'bytes32',
+        internalType: 'bytes32',
+      },
+      {
+        name: 'blockNumber',
+        type: 'uint64',
+        internalType: 'uint64',
+      },
+      {
+        name: 'value',
+        type: 'bytes',
+        internalType: 'bytes',
+      },
+    ],
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    name: 'setStreamLastMiniblock',
+    inputs: [
+      {
+        name: 'streamId',
+        type: 'bytes32',
+        internalType: 'bytes32',
+      },
+      {
+        name: 'prevMiniBlockHash',
+        type: 'bytes32',
+        internalType: 'bytes32',
+      },
+      {
+        name: 'lastMiniblockHash',
+        type: 'bytes32',
+        internalType: 'bytes32',
+      },
+      {
+        name: 'lastMiniblockNum',
+        type: 'uint64',
+        internalType: 'uint64',
+      },
+      {
+        name: 'isSealed',
+        type: 'bool',
+        internalType: 'bool',
+      },
+    ],
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    name: 'setStreamLastMiniblockBatch',
+    inputs: [
+      {
+        name: 'miniblocks',
+        type: 'tuple[]',
+        internalType: 'struct SetMiniblock[]',
+        components: [
+          {
+            name: 'streamId',
+            type: 'bytes32',
+            internalType: 'bytes32',
+          },
+          {
+            name: 'prevMiniBlockHash',
+            type: 'bytes32',
+            internalType: 'bytes32',
+          },
+          {
+            name: 'lastMiniblockHash',
+            type: 'bytes32',
+            internalType: 'bytes32',
+          },
+          {
+            name: 'lastMiniblockNum',
+            type: 'uint64',
+            internalType: 'uint64',
+          },
+          {
+            name: 'isSealed',
+            type: 'bool',
+            internalType: 'bool',
+          },
+        ],
+      },
+    ],
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    name: 'updateNodeStatus',
+    inputs: [
+      {
+        name: 'nodeAddress',
+        type: 'address',
+        internalType: 'address',
+      },
+      {
+        name: 'status',
+        type: 'uint8',
+        internalType: 'enum NodeStatus',
+      },
+    ],
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'function',
+    name: 'updateNodeUrl',
+    inputs: [
+      {
+        name: 'nodeAddress',
+        type: 'address',
+        internalType: 'address',
+      },
+      {
+        name: 'url',
+        type: 'string',
+        internalType: 'string',
+      },
+    ],
+    outputs: [],
+    stateMutability: 'nonpayable',
+  },
+  {
+    type: 'event',
+    name: 'ConfigurationChanged',
+    inputs: [
+      {
+        name: 'key',
+        type: 'bytes32',
+        indexed: false,
+        internalType: 'bytes32',
+      },
+      {
+        name: 'block',
+        type: 'uint64',
+        indexed: false,
+        internalType: 'uint64',
+      },
+      {
+        name: 'value',
+        type: 'bytes',
+        indexed: false,
+        internalType: 'bytes',
+      },
+      {
+        name: 'deleted',
+        type: 'bool',
+        indexed: false,
+        internalType: 'bool',
+      },
+    ],
+    anonymous: false,
+  },
+  {
+    type: 'event',
+    name: 'ConfigurationManagerAdded',
+    inputs: [
+      {
+        name: 'manager',
+        type: 'address',
+        indexed: true,
+        internalType: 'address',
+      },
+    ],
+    anonymous: false,
+  },
+  {
+    type: 'event',
+    name: 'ConfigurationManagerRemoved',
+    inputs: [
+      {
+        name: 'manager',
+        type: 'address',
+        indexed: true,
+        internalType: 'address',
+      },
+    ],
+    anonymous: false,
+  },
+  {
+    type: 'event',
+    name: 'Initialized',
+    inputs: [
+      {
+        name: 'version',
+        type: 'uint32',
+        indexed: false,
+        internalType: 'uint32',
+      },
+    ],
+    anonymous: false,
+  },
+  {
+    type: 'event',
+    name: 'InterfaceAdded',
+    inputs: [
+      {
+        name: 'interfaceId',
+        type: 'bytes4',
+        indexed: true,
+        internalType: 'bytes4',
+      },
+    ],
+    anonymous: false,
+  },
+  {
+    type: 'event',
+    name: 'InterfaceRemoved',
+    inputs: [
+      {
+        name: 'interfaceId',
+        type: 'bytes4',
+        indexed: true,
+        internalType: 'bytes4',
+      },
+    ],
+    anonymous: false,
+  },
+  {
+    type: 'event',
+    name: 'NodeAdded',
+    inputs: [
+      {
+        name: 'nodeAddress',
+        type: 'address',
+        indexed: true,
+        internalType: 'address',
+      },
+      {
+        name: 'operator',
+        type: 'address',
+        indexed: true,
+        internalType: 'address',
+      },
+      {
+        name: 'url',
+        type: 'string',
+        indexed: false,
+        internalType: 'string',
+      },
+      {
+        name: 'status',
+        type: 'uint8',
+        indexed: false,
+        internalType: 'enum NodeStatus',
+      },
+    ],
+    anonymous: false,
+  },
+  {
+    type: 'event',
+    name: 'NodeRemoved',
+    inputs: [
+      {
+        name: 'nodeAddress',
+        type: 'address',
+        indexed: true,
+        internalType: 'address',
+      },
+    ],
+    anonymous: false,
+  },
+  {
+    type: 'event',
+    name: 'NodeStatusUpdated',
+    inputs: [
+      {
+        name: 'nodeAddress',
+        type: 'address',
+        indexed: true,
+        internalType: 'address',
+      },
+      {
+        name: 'status',
+        type: 'uint8',
+        indexed: false,
+        internalType: 'enum NodeStatus',
+      },
+    ],
+    anonymous: false,
+  },
+  {
+    type: 'event',
+    name: 'NodeUrlUpdated',
+    inputs: [
+      {
+        name: 'nodeAddress',
+        type: 'address',
+        indexed: true,
+        internalType: 'address',
+      },
+      {
+        name: 'url',
+        type: 'string',
+        indexed: false,
+        internalType: 'string',
+      },
+    ],
+    anonymous: false,
+  },
+  {
+    type: 'event',
+    name: 'OperatorAdded',
+    inputs: [
+      {
+        name: 'operatorAddress',
+        type: 'address',
+        indexed: true,
+        internalType: 'address',
+      },
+    ],
+    anonymous: false,
+  },
+  {
+    type: 'event',
+    name: 'OperatorRemoved',
+    inputs: [
+      {
+        name: 'operatorAddress',
+        type: 'address',
+        indexed: true,
+        internalType: 'address',
+      },
+    ],
+    anonymous: false,
+  },
+  {
+    type: 'event',
+    name: 'OwnershipTransferred',
+    inputs: [
+      {
+        name: 'previousOwner',
+        type: 'address',
+        indexed: true,
+        internalType: 'address',
+      },
+      {
+        name: 'newOwner',
+        type: 'address',
+        indexed: true,
+        internalType: 'address',
+      },
+    ],
+    anonymous: false,
+  },
+  {
+    type: 'event',
+    name: 'StreamAllocated',
+    inputs: [
+      {
+        name: 'streamId',
+        type: 'bytes32',
+        indexed: false,
+        internalType: 'bytes32',
+      },
+      {
+        name: 'nodes',
+        type: 'address[]',
+        indexed: false,
+        internalType: 'address[]',
+      },
+      {
+        name: 'genesisMiniblockHash',
+        type: 'bytes32',
+        indexed: false,
+        internalType: 'bytes32',
+      },
+      {
+        name: 'genesisMiniblock',
+        type: 'bytes',
+        indexed: false,
+        internalType: 'bytes',
+      },
+    ],
+    anonymous: false,
+  },
+  {
+    type: 'event',
+    name: 'StreamLastMiniblockUpdateFailed',
+    inputs: [
+      {
+        name: 'streamId',
+        type: 'bytes32',
+        indexed: false,
+        internalType: 'bytes32',
+      },
+      {
+        name: 'lastMiniblockHash',
+        type: 'bytes32',
+        indexed: false,
+        internalType: 'bytes32',
+      },
+      {
+        name: 'lastMiniblockNum',
+        type: 'uint64',
+        indexed: false,
+        internalType: 'uint64',
+      },
+      {
+        name: 'reason',
+        type: 'string',
+        indexed: false,
+        internalType: 'string',
+      },
+    ],
+    anonymous: false,
+  },
+  {
+    type: 'event',
+    name: 'StreamLastMiniblockUpdated',
+    inputs: [
+      {
+        name: 'streamId',
+        type: 'bytes32',
+        indexed: false,
+        internalType: 'bytes32',
+      },
+      {
+        name: 'lastMiniblockHash',
+        type: 'bytes32',
+        indexed: false,
+        internalType: 'bytes32',
+      },
+      {
+        name: 'lastMiniblockNum',
+        type: 'uint64',
+        indexed: false,
+        internalType: 'uint64',
+      },
+      {
+        name: 'isSealed',
+        type: 'bool',
+        indexed: false,
+        internalType: 'bool',
+      },
+    ],
+    anonymous: false,
+  },
+  {
+    type: 'event',
+    name: 'StreamPlacementUpdated',
+    inputs: [
+      {
+        name: 'streamId',
+        type: 'bytes32',
+        indexed: false,
+        internalType: 'bytes32',
+      },
+      {
+        name: 'nodeAddress',
+        type: 'address',
+        indexed: false,
+        internalType: 'address',
+      },
+      {
+        name: 'isAdded',
+        type: 'bool',
+        indexed: false,
+        internalType: 'bool',
+      },
+    ],
+    anonymous: false,
+  },
+  {
+    type: 'error',
+    name: 'Initializable_InInitializingState',
+    inputs: [],
+  },
+  {
+    type: 'error',
+    name: 'Initializable_NotInInitializingState',
+    inputs: [],
+  },
+  {
+    type: 'error',
+    name: 'Introspection_AlreadySupported',
+    inputs: [],
+  },
+  {
+    type: 'error',
+    name: 'Introspection_NotSupported',
+    inputs: [],
+  },
+  {
+    type: 'error',
+    name: 'Ownable__NotOwner',
+    inputs: [
+      {
+        name: 'account',
+        type: 'address',
+        internalType: 'address',
+      },
+    ],
+  },
+  {
+    type: 'error',
+    name: 'Ownable__ZeroAddress',
+    inputs: [],
+  },
+] as const
+
 const baseRiverTokenAddress = '0x91930fd11ABAa5241241d3B07c02A8d0B5ac1920' satisfies Address
 const baseGammaSepoliaTokenAddress = '0x24e3123E1b30E041E2df26Da9d6140c5B07Fe4F0' satisfies Address
 
@@ -1354,7 +3011,6 @@ export default defineConfig({
     {
       name: 'RiverToken',
       address: {
-        [mainnet.id]: mainnetRiverTokenAddress,
         [base.id]: baseRiverTokenAddress,
         [baseSepolia.id]: baseGammaSepoliaTokenAddress,
       },
@@ -1367,6 +3023,22 @@ export default defineConfig({
         [baseSepolia.id]: gamma.address as Address,
       },
       abi: rewardDistributionAbi,
+    },
+    {
+      name: 'NodeOperator',
+      address: {
+        [base.id]: omega.address as Address,
+        [baseSepolia.id]: gamma.address as Address,
+      },
+      abi: nodeOperatorAbi,
+    },
+    {
+      name: 'RiverRegistry',
+      address: {
+        [river.id]: '0x1298c03Fde548dc433a452573E36A713b38A0404',
+        [riverGamma.id]: '0xf18E98D36A6bd1aDb52F776aCc191E69B491c070',
+      },
+      abi: riverRegistryAbi,
     },
   ],
   plugins: [

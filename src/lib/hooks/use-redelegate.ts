@@ -11,6 +11,7 @@ import { useEffect, useMemo } from 'react'
 import type { Address } from 'viem'
 import { base, baseSepolia } from 'viem/chains'
 import { useAccount, useReadContracts, useWaitForTransactionReceipt } from 'wagmi'
+import { useOperatorsWithDeposits } from './use-stakeable-operators'
 
 const isRiverInvalidTokenAmountError = (error: Error) => {
   return error.message.includes('River__InvalidTokenAmount')
@@ -23,7 +24,6 @@ const isBase = (chainId?: number) => {
 export const useRedelegate = () => {
   const qc = useQueryClient()
   const { address, chainId } = useAccount()
-
   const { data: depositIds } = useReadRewardsDistributionGetDepositsByDepositor({
     args: [address!],
   })
@@ -83,12 +83,18 @@ export const useRedelegate = () => {
   })
 
   const { queryKey: delegateeQueryKey } = useReadRiverTokenDelegates()
+  const { queryKey: depositQueryKey } = useReadRewardsDistributionGetDepositsByDepositor({
+    args: [address!],
+  })
+  const { queryKey: operatorsQueryKey } = useOperatorsWithDeposits()
 
   useEffect(() => {
     if (isTxConfirmed) {
       qc.invalidateQueries({ queryKey: delegateeQueryKey })
+      qc.invalidateQueries({ queryKey: depositQueryKey })
+      qc.invalidateQueries({ queryKey: operatorsQueryKey })
     }
-  }, [delegateeQueryKey, isTxConfirmed, qc])
+  }, [delegateeQueryKey, depositQueryKey, isTxConfirmed, operatorsQueryKey, qc])
 
   return {
     isTxConfirmed,

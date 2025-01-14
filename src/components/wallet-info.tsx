@@ -26,9 +26,9 @@ export const WalletInfo = ({
   showAuthorizedClaimer,
 }: WalletInfoProps) => {
   const { address } = useAccount()
-  const { disconnect, isPending } = useDisconnect()
+  const { disconnect, isPending: isDisconnectPending } = useDisconnect()
 
-  const { isLoading: isRiverTokenLoading, data: riverBalance } = useReadRiverTokenBalanceOf({
+  const { isPending: isRiverTokenLoading, data: riverBalance } = useReadRiverTokenBalanceOf({
     args: [address!],
     query: {
       enabled: showRvrBalance && !!address,
@@ -41,18 +41,18 @@ export const WalletInfo = ({
     },
   })
 
-  const { isLoading: isDelegateeLoading, data: delegatee } = useReadRiverTokenDelegates({
+  const { isPending: isDelegateeLoading, data: delegatee } = useReadRiverTokenDelegates({
     args: [address!],
     query: { enabled: showDelegatee && !!address },
   })
 
-  const { isLoading: isCurrentRewardLoading, data: currentReward } =
+  const { isPending: isCurrentRewardLoading, data: currentReward } =
     useReadRewardsDistributionCurrentReward({
       args: [address!],
       query: { enabled: showRewards && !!address },
     })
 
-  const { isLoading: isAuthorizedClaimerLoading, data: authorizedClaimer } =
+  const { isPending: isAuthorizedClaimerLoading, data: authorizedClaimer } =
     useReadAuthorizerGetAuthorizedClaimer({
       args: [address!],
       query: {
@@ -118,10 +118,10 @@ export const WalletInfo = ({
         aria-label="Disconnect your wallet"
         variant="secondary"
         className="w-full"
-        isLoading={isPending}
+        isLoading={isDisconnectPending}
         onClick={() => disconnect()}
       >
-        {isPending ? 'Disconnecting...' : 'Disconnect'}
+        {isDisconnectPending ? 'Disconnecting...' : 'Disconnect'}
       </Button>
     </div>
   )

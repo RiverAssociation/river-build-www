@@ -1,6 +1,5 @@
 import { FooterDivider } from '@/components/footer/footer-divider'
 import { sharedMetadata } from '@/constants/metadata'
-import { TanstackQueryProvider } from '@/lib/context/tanstack-query-provider'
 import { Metadata } from 'next'
 
 const metadataTitle = 'River Node Network Status'
@@ -29,10 +28,10 @@ export const metadata: Metadata = {
 
 const StatusLayout = async ({ children }: { children: React.ReactNode }) => {
   return (
-    <TanstackQueryProvider>
+    <>
       {children}
       <FooterDivider className="mt-8 lg:mt-16" />
-    </TanstackQueryProvider>
+    </>
   )
 }
 

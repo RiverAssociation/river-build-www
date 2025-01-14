@@ -1,5 +1,5 @@
 import { Typography } from '@/components/ui/typography'
-import { getNodeData } from '@/data/requests'
+import { getRiverNodes } from '@/data/requests'
 import { Loader2 } from 'lucide-react'
 import loadDynamic from 'next/dynamic'
 import { NodeStatus } from './node-status'
@@ -19,7 +19,7 @@ const NodeAnimation = loadDynamic(
 )
 
 const StatusPage = async () => {
-  const initialData = await getNodeData().catch(() => undefined)
+  const initialData = await getRiverNodes('omega').catch(() => undefined)
 
   return (
     <div className="hero-glow mx-auto flex items-center justify-center px-4 pt-24 lg:pt-28">
